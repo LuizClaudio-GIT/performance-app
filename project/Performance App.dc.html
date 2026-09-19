@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#07090A;color:#F4F4F2;font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#C6FF00;text-decoration:none}a:hover{color:#dfff5c}
+*{box-sizing:border-box}
+::-webkit-scrollbar{width:0;height:0}
+@keyframes pf-pulse{0%,100%{opacity:1}50%{opacity:.35}}
+</style>
+</helmet>
+
+<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;gap:16px;padding:22px 14px 40px;background:radial-gradient(120% 80% at 50% 0%,#101315 0%,#07090A 70%)">
+
+  <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:center;width:100%;max-width:900px">
+    <div style="display:flex;align-items:center;gap:9px">
+      <div style="width:26px;height:26px;border-radius:7px;background:#C6FF00;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;color:#0B0D0F;line-height:1">P</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;letter-spacing:.06em;line-height:1">PERFORMANCE</div>
+    </div>
+    <div style="flex:1"></div>
+    <div style="display:flex;gap:6px;padding:4px;border:1px solid #292D32;border-radius:999px;background:#15181C">
+      <button onClick="{{ setPhone }}" style="{{ phoneBtn }}">PHONE</button>
+      <button onClick="{{ setFold }}" style="{{ foldBtn }}">FOLD / DESKTOP</button>
+    </div>
+  </div>
+
+  <div style="{{ deviceStyle }}">
+    <div style="position:absolute;inset:0;display:flex;flex-direction:column;background:#0B0D0F;overflow:hidden">
+
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px 4px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#F4F4F2;flex:none">
+        <span>07:24</span>
+        <span style="letter-spacing:.14em;color:#8C929A">••ıl ᯤ 84%</span>
+      </div>
+
+      <div style="flex:1;min-height:0;display:flex;gap:0">
+
+        <div style="flex:1;min-width:0;overflow-y:auto;overflow-x:hidden">
+
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 18px 12px;position:sticky;top:0;background:linear-gradient(#0B0D0F 70%,rgba(11,13,15,0));z-index:5">
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:22px;height:22px;border-radius:6px;background:#C6FF00;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;color:#0B0D0F;line-height:1">P</div>
+              <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:.09em">PERFORMANCE</div>
+            </div>
+            <div style="text-align:right;font-family:'JetBrains Mono',monospace;font-size:9px;line-height:1.5;color:#8C929A;letter-spacing:.12em">SEMANA 01<br>FOUNDATION</div>
+          </div>
+
+          <sc-if value="{{ isHoje }}" hint-placeholder-val="{{ true }}">
+            <div style="padding:0 18px 120px">
+
+              <div style="position:relative;border:1px solid #292D32;border-radius:14px;overflow:hidden;background:#101316;min-height:230px;display:flex;flex-direction:column;justify-content:flex-end">
+                <div style="position:absolute;inset:0;background-image:repeating-linear-gradient(115deg,#141719 0 9px,#0E1113 9px 18px);opacity:.9"></div>
+                <div style="position:absolute;inset:0;background:linear-gradient(90deg,#0B0D0F 8%,rgba(11,13,15,.55) 55%,rgba(11,13,15,.2))"></div>
+                <div style="position:absolute;right:12px;top:12px;font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.14em;color:#6C737B;border:1px solid #292D32;padding:4px 7px;border-radius:4px">FOTO P&B — ATLETA</div>
+                <div style="position:relative;padding:22px 18px 20px">
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;color:#8C929A">SEGUNDA-FEIRA<br>21 DE SETEMBRO</div>
+                  <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:78px;line-height:.82;letter-spacing:-.01em;margin:10px 0 6px">HOJE</div>
+                  <div style="width:46px;height:3px;background:#C6FF00;margin-bottom:12px"></div>
+                  <div style="font-size:12.5px;color:#8C929A;max-width:230px;line-height:1.45">“Pequenas ações, grandes resultados.”</div>
+                </div>
+              </div>
+
+              <div style="margin-top:14px;border:1px solid #C6FF00;border-radius:14px;background:linear-gradient(160deg,rgba(198,255,0,.10),rgba(198,255,0,0) 60%),#15181C;padding:16px 16px 14px">
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div style="width:6px;height:6px;background:#C6FF00;border-radius:50%"></div>
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.2em;color:#C6FF00">FOCO DE HOJE</div>
+                </div>
+                <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:34px;line-height:1.02;margin:8px 0 10px">MOBILIDADE + GINÁSTICA</div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.1em;color:#C6FF00;border:1px solid rgba(198,255,0,.35);background:rgba(198,255,0,.08);padding:5px 8px;border-radius:5px">DORSIFLEXÃO</span>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.1em;color:#C6FF00;border:1px solid rgba(198,255,0,.35);background:rgba(198,255,0,.08);padding:5px 8px;border-radius:5px">BASE HANDSTAND</span>
+                </div>
+                <div style="border-top:1px solid #292D32;padding-top:11px;font-size:12.5px;line-height:1.5;color:#8C929A"><span style="color:#F4F4F2;font-weight:600">Objetivo: </span>melhorar a profundidade do agachamento e construir suporte de ombro para a parede.</div>
+              </div>
+
+              <div style="display:flex;align-items:center;justify-content:space-between;margin:22px 2px 9px">
+                <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.2em;color:#8C929A">CONTEXTO — TREINO DO BOX</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#5E656D">NÃO PRESCRITO AQUI</div>
+              </div>
+
+              <div style="border:1px solid #292D32;border-radius:14px;background:#101316">
+                <div style="display:flex;align-items:center;gap:13px;padding:15px 15px 12px">
+                  <div style="width:40px;height:40px;border:1px solid #292D32;border-radius:10px;display:flex;align-items:center;justify-content:center;flex:none">
+                    <svg width="22" height="12" viewBox="0 0 22 12"><rect x="0" y="2" width="3" height="8" fill="#F4F4F2"/><rect x="4" y="4" width="2" height="4" fill="#F4F4F2"/><rect x="6" y="5" width="10" height="2" fill="#F4F4F2"/><rect x="16" y="4" width="2" height="4" fill="#F4F4F2"/><rect x="19" y="2" width="3" height="8" fill="#F4F4F2"/></svg>
+                  </div>
+                  <div style="flex:1;min-width:0">
+                    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:23px;line-height:1">CROSSFIT</div>
+                    <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#8C929A;margin-top:5px;letter-spacing:.08em">07:00 — 08:00 · BOX PERFORMANCE</div>
+                  </div>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.12em;color:#C6FF00;border:1px solid rgba(198,255,0,.4);padding:5px 8px;border-radius:5px">EM BREVE</span>
+                </div>
+                <div style="margin:0 12px 12px;border:1px solid #23272B;border-radius:10px;background:#15181C;display:flex;align-items:stretch">
+                  <div style="flex:1;padding:12px 14px">
+                    <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.18em;color:#8C929A;margin-bottom:7px">WOD DO DIA</div>
+                    <div style="font-size:12.5px;line-height:1.65;color:#F4F4F2">For time:<br>500 m Row<br>21 Thrusters (43/30)<br>15 Pull-ups<br>9 Burpees</div>
+                  </div>
+                  <div style="width:96px;border-left:1px solid #23272B;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px">
+                    <div style="width:34px;height:34px;border-radius:50%;border:1.5px solid #F4F4F2;display:flex;align-items:center;justify-content:center;font-size:11px">▶</div>
+                    <div style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.12em;color:#8C929A;text-align:center;line-height:1.4">VER<br>DETALHES</div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="display:flex;align-items:center;justify-content:space-between;margin:22px 2px 9px">
+                <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.2em;color:#C6FF00">DESENVOLVIMENTO COMPLEMENTAR</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#5E656D">{{ blocksDone }}/3</div>
+              </div>
+
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <sc-for list="{{ blocks }}" as="b" hint-placeholder-count="3">
+                  <div style="{{ b.cardStyle }}">
+                    <div style="display:flex;align-items:flex-start;gap:13px">
+                      <div style="{{ b.iconStyle }}">
+                        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:19px;line-height:1">{{ b.glyph }}</div>
+                      </div>
+                      <div style="flex:1;min-width:0">
+                        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:23px;line-height:1">{{ b.name }}</div>
+                          <span style="{{ b.prioStyle }}">{{ b.prio }}</span>
+                        </div>
+                        <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#8C929A;margin-top:6px;letter-spacing:.08em">{{ b.meta }}</div>
+                        <div style="font-size:12px;color:#8C929A;margin-top:8px;line-height:1.45">{{ b.obj }}</div>
+                      </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px;margin-top:13px">
+                      <div style="display:flex;gap:6px;flex-wrap:wrap;flex:1">
+                        <sc-for list="{{ b.tags }}" as="t" hint-placeholder-count="3">
+                          <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.1em;color:#8C929A;border:1px solid #292D32;padding:4px 7px;border-radius:4px">{{ t }}</span>
+                        </sc-for>
+                      </div>
+                      <button onClick="{{ b.start }}" style="{{ b.btnStyle }}">{{ b.btnLabel }}</button>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+
+              <div style="display:flex;align-items:center;justify-content:space-between;margin:22px 2px 9px">
+                <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.2em;color:#8C929A">CHECKLIST DO DIA</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#5E656D">{{ checkDone }}/6</div>
+              </div>
+              <div style="border:1px solid #292D32;border-radius:14px;background:#15181C;overflow:hidden">
+                <sc-for list="{{ checklist }}" as="c" hint-placeholder-count="6">
+                  <div onClick="{{ c.toggle }}" style="{{ c.rowStyle }}">
+                    <div style="{{ c.dotStyle }}"></div>
+                    <div style="{{ c.labelStyle }}">{{ c.label }}</div>
+                    <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#8C929A">{{ c.value }}</div>
+                  </div>
+                </sc-for>
+              </div>
+
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px">
+                <sc-for list="{{ stats }}" as="s" hint-placeholder-count="3">
+                  <div style="border:1px solid #292D32;border-radius:12px;background:#15181C;padding:12px 11px">
+                    <div style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.14em;color:#8C929A">{{ s.label }}</div>
+                    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:26px;line-height:1.1;margin-top:6px">{{ s.value }}</div>
+                    <div style="height:3px;background:#23272B;border-radius:2px;margin-top:9px;overflow:hidden">
+                      <div style="{{ s.barStyle }}"></div>
+                    </div>
+                    <div style="font-family:'JetBrains Mono',monospace;font-size:8.5px;color:#5E656D;margin-top:6px">{{ s.sub }}</div>
+                  </div>
+                </sc-for>
+              </div>
+
+              <div style="margin-top:16px;border:1px solid #292D32;border-radius:14px;overflow:hidden;position:relative;min-height:84px;display:flex;align-items:center;padding:0 18px">
+                <div style="position:absolute;inset:0;background-image:repeating-linear-gradient(115deg,#131618 0 8px,#0D1012 8px 16px)"></div>
+                <div style="position:absolute;inset:0;background:linear-gradient(90deg,#0B0D0F 20%,rgba(11,13,15,.35))"></div>
+                <div style="position:relative;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.22em;line-height:1.9;color:#F4F4F2">DISCIPLINA HOJE,<br>RESULTADOS AMANHÃ.</div>
+              </div>
+
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isSemana }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:0 18px 120px">
+              <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:6px">
+                <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:48px;line-height:.95">MINHA<br>SEMANA</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.16em;color:#8C929A;text-align:right;line-height:1.7">CONSISTÊNCIA<br>GERA<br>RESULTADOS</div>
+              </div>
+              <div style="width:46px;height:3px;background:#C6FF00;margin:10px 0 18px"></div>
+
+              <div style="border:1px solid #292D32;border-radius:14px;background:#15181C;padding:14px 15px;margin-bottom:16px">
+                <div style="display:flex;justify-content:space-between;align-items:baseline">
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.18em;color:#8C929A">VOLUME COMPLEMENTAR</div>
+                  <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:22px;color:#C6FF00">62%</div>
+                </div>
+                <div style="height:6px;background:#23272B;border-radius:3px;margin-top:10px;overflow:hidden"><div style="width:62%;height:100%;background:#C6FF00"></div></div>
+                <div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:8.5px;color:#5E656D;margin-top:8px"><span>5 DE 8 SESSÕES</span><span>META SEMANAL</span></div>
+              </div>
+
+              <div style="display:flex;flex-direction:column;gap:9px">
+                <sc-for list="{{ week }}" as="d" hint-placeholder-count="7">
+                  <div style="{{ d.rowStyle }}">
+                    <div style="{{ d.dayStyle }}">
+                      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;line-height:1">{{ d.day }}</div>
+                      <div style="font-family:'JetBrains Mono',monospace;font-size:8.5px;color:#8C929A;margin-top:3px">{{ d.date }}</div>
+                    </div>
+                    <div style="flex:1;min-width:0;padding:12px 14px">
+                      <div style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.14em;color:#5E656D">BOX · {{ d.box }}</div>
+                      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
+                        <sc-for list="{{ d.work }}" as="w" hint-placeholder-count="2">
+                          <span style="{{ w.style }}">{{ w.label }}</span>
+                        </sc-for>
+                      </div>
+                    </div>
+                    <div style="{{ d.stateStyle }}">{{ d.state }}</div>
+                  </div>
+                </sc-for>
+              </div>
+
+              <div style="margin-top:20px;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.2em;line-height:1.9;color:#8C929A">PEQUENAS AÇÕES,<br>GRANDES RESULTADOS.</div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isFood }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:0 18px 120px">
+              <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:6px">
+                <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:48px;line-height:.95">ALIMEN-<br>TAÇÃO</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.16em;color:#8C929A;text-align:right;line-height:1.7">COMBUSTÍVEL<br>PARA EVOLUIR</div>
+              </div>
+              <div style="width:46px;height:3px;background:#C6FF00;margin:10px 0 18px"></div>
+
+              <div style="border:1px solid #292D32;border-radius:14px;background:#15181C;padding:16px;display:flex;gap:18px;align-items:center">
+                <div style="position:relative;width:104px;height:104px;flex:none">
+                  <svg width="104" height="104" viewBox="0 0 104 104">
+                    <circle cx="52" cy="52" r="44" fill="none" stroke="#23272B" stroke-width="9"/>
+                    <circle cx="52" cy="52" r="44" fill="none" stroke="#C6FF00" stroke-width="9" stroke-linecap="round" stroke-dasharray="{{ kcalDash }}" transform="rotate(-90 52 52)"/>
+                  </svg>
+                  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+                    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:28px;line-height:1">{{ kcalNow }}</div>
+                    <div style="font-family:'JetBrains Mono',monospace;font-size:8.5px;color:#8C929A;margin-top:2px">/ 1.900 kcal</div>
+                  </div>
+                </div>
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:12px">
+                  <sc-for list="{{ macros }}" as="m" hint-placeholder-count="3">
+                    <div>
+                      <div style="display:flex;justify-content:space-between;align-items:baseline;font-size:12px">
+                        <span style="color:#F4F4F2;font-weight:500">{{ m.name }}</span>
+                        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#8C929A">{{ m.val }}</span>
+                      </div>
+                      <div style="height:4px;background:#23272B;border-radius:2px;margin-top:6px;overflow:hidden"><div style="{{ m.barStyle }}"></div></div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+
+              <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.2em;color:#8C929A;margin:20px 2px 9px">PLANO DO DIA</div>
+              <div style="display:flex;flex-direction:column;gap:9px">
+                <sc-for list="{{ meals }}" as="m" hint-placeholder-count="5">
+                  <div style="{{ m.rowStyle }}">
+                    <div style="width:52px;height:52px;border-radius:10px;border:1px solid #292D32;background-image:repeating-linear-gradient(115deg,#191D20 0 7px,#131719 7px 14px);flex:none;display:flex;align-items:flex-end;justify-content:center;padding-bottom:4px">
+                      <span style="font-family:'JetBrains Mono',monospace;font-size:7px;color:#6C737B;letter-spacing:.06em">FOTO</span>
+                    </div>
+                    <div style="flex:1;min-width:0">
+                      <div style="font-size:13.5px;font-weight:600">{{ m.name }}</div>
+                      <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#8C929A;margin-top:4px">{{ m.time }} · {{ m.kcal }} kcal · P {{ m.prot }}</div>
+                      <div style="font-size:11.5px;color:#6C737B;margin-top:5px;line-height:1.4">{{ m.items }}</div>
+                    </div>
+                    <button onClick="{{ m.toggle }}" style="{{ m.btnStyle }}">{{ m.mark }}</button>
+                  </div>
+                </sc-for>
+              </div>
+
+              <div style="margin-top:12px;border:1px solid #292D32;border-radius:14px;background:#15181C;padding:14px 15px;display:flex;align-items:center;gap:14px">
+                <div style="flex:1">
+                  <div style="display:flex;justify-content:space-between;align-items:baseline">
+                    <span style="font-size:13px;font-weight:600">Água</span>
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#8C929A">{{ waterLabel }} / 3,5 L</span>
+                  </div>
+                  <div style="height:6px;background:#23272B;border-radius:3px;margin-top:9px;overflow:hidden"><div style="{{ waterBar }}"></div></div>
+                </div>
+                <button onClick="{{ addWater }}" style="width:38px;height:38px;border-radius:50%;border:1px solid #C6FF00;background:rgba(198,255,0,.1);color:#C6FF00;font-size:19px;line-height:1;cursor:pointer;flex:none">+</button>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isEvo }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:0 18px 120px">
+              <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:6px">
+                <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:48px;line-height:.95">EVOLUÇÃO</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.16em;color:#8C929A;text-align:right;line-height:1.7">DADOS<br>GERAM<br>DIREÇÃO</div>
+              </div>
+              <div style="width:46px;height:3px;background:#C6FF00;margin:10px 0 16px"></div>
+
+              <div style="display:flex;gap:6px;padding:4px;border:1px solid #292D32;border-radius:999px;background:#15181C;margin-bottom:16px">
+                <sc-for list="{{ evoTabs }}" as="t" hint-placeholder-count="3">
+                  <button onClick="{{ t.go }}" style="{{ t.style }}">{{ t.label }}</button>
+                </sc-for>
+              </div>
+
+              <sc-if value="{{ isEvoResumo }}" hint-placeholder-val="{{ true }}">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                  <sc-for list="{{ metrics }}" as="m" hint-placeholder-count="6">
+                    <div style="border:1px solid #292D32;border-radius:12px;background:#15181C;padding:13px 12px">
+                      <div style="font-size:11.5px;color:#8C929A">{{ m.name }}</div>
+                      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:30px;line-height:1.1;margin-top:3px">{{ m.value }}</div>
+                      <svg width="100%" height="30" viewBox="0 0 100 30" preserveAspectRatio="none" style="margin-top:8px">
+                        <polyline points="{{ m.points }}" fill="none" stroke="#C6FF00" stroke-width="1.6" vector-effect="non-scaling-stroke"/>
+                      </svg>
+                      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:6px">
+                        <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;color:#5E656D">base {{ m.base }}</span>
+                        <span style="{{ m.deltaStyle }}">{{ m.delta }}</span>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ isEvoProg }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-direction:column;gap:12px">
+                  <sc-for list="{{ progressions }}" as="p" hint-placeholder-count="2">
+                    <div style="border:1px solid #292D32;border-radius:14px;background:#15181C;padding:15px 15px 13px">
+                      <div style="display:flex;align-items:baseline;justify-content:space-between">
+                        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:26px;line-height:1">{{ p.name }}</div>
+                        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#C6FF00">{{ p.stageLabel }}</div>
+                      </div>
+                      <div style="font-size:11.5px;color:#8C929A;margin-top:7px;line-height:1.45">{{ p.note }}</div>
+                      <div style="display:flex;flex-direction:column;margin-top:13px">
+                        <sc-for list="{{ p.steps }}" as="s" hint-placeholder-count="7">
+                          <div style="display:flex;align-items:stretch;gap:12px">
+                            <div style="width:14px;display:flex;flex-direction:column;align-items:center">
+                              <div style="{{ s.dotStyle }}"></div>
+                              <div style="{{ s.lineStyle }}"></div>
+                            </div>
+                            <div style="{{ s.textStyle }}">{{ s.label }}<span style="{{ s.tagStyle }}">{{ s.tag }}</span></div>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ isEvoMed }}" hint-placeholder-val="{{ false }}">
+                <div style="border:1px solid #292D32;border-radius:14px;background:#15181C;overflow:hidden">
+                  <sc-for list="{{ measures }}" as="m" hint-placeholder-count="6">
+                    <div style="display:flex;align-items:center;gap:12px;padding:14px 15px;border-bottom:1px solid #23272B">
+                      <div style="flex:1;font-size:12.5px">{{ m.name }}</div>
+                      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#5E656D;width:56px;text-align:right">{{ m.base }}</div>
+                      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;width:70px;text-align:right">{{ m.now }}</div>
+                      <div style="{{ m.deltaStyle }}">{{ m.delta }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isMais }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:0 18px 120px">
+              <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:6px">
+                <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:48px;line-height:.95">MAIS</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.16em;color:#8C929A;text-align:right;line-height:1.7">O SEU<br>PROCESSO</div>
+              </div>
+              <div style="width:46px;height:3px;background:#C6FF00;margin:10px 0 18px"></div>
+
+              <div style="border:1px solid #292D32;border-radius:14px;background:#15181C;padding:15px;display:flex;align-items:center;gap:14px">
+                <div style="width:54px;height:54px;border-radius:12px;border:1px solid #292D32;background-image:repeating-linear-gradient(115deg,#191D20 0 7px,#131719 7px 14px);flex:none;display:flex;align-items:flex-end;justify-content:center;padding-bottom:4px">
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:7px;color:#6C737B">FOTO</span>
+                </div>
+                <div style="flex:1;min-width:0">
+                  <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:26px;line-height:1">RAFAEL M.</div>
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#8C929A;margin-top:5px;letter-spacing:.1em">BOX PERFORMANCE · SEMANA 01 · FOUNDATION</div>
+                </div>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.12em;color:#C6FF00;border:1px solid rgba(198,255,0,.35);padding:5px 8px;border-radius:5px">ATIVO</span>
+              </div>
+
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">
+                <div style="border:1px solid #292D32;border-radius:12px;background:#15181C;padding:13px">
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.14em;color:#8C929A">SESSÕES COMPLEMENTARES</div>
+                  <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:30px;margin-top:5px">38</div>
+                </div>
+                <div style="border:1px solid #292D32;border-radius:12px;background:#15181C;padding:13px">
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.14em;color:#8C929A">SEQUÊNCIA ATUAL</div>
+                  <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:30px;margin-top:5px;color:#C6FF00">11 dias</div>
+                </div>
+              </div>
+
+              <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.2em;color:#8C929A;margin:20px 2px 9px">MINHAS LIMITAÇÕES</div>
+              <div style="border:1px solid #292D32;border-radius:14px;background:#15181C;overflow:hidden">
+                <sc-for list="{{ limitations }}" as="l" hint-placeholder-count="4">
+                  <div style="{{ l.rowStyle }}">
+                    <div style="flex:1;min-width:0">
+                      <div style="font-size:13px;font-weight:600">{{ l.area }}</div>
+                      <div style="font-size:11.5px;color:#8C929A;margin-top:4px">{{ l.note }}</div>
+                    </div>
+                    <div style="width:70px;flex:none">
+                      <div style="height:4px;background:#23272B;border-radius:2px;overflow:hidden"><div style="{{ l.barStyle }}"></div></div>
+                      <div style="font-family:'JetBrains Mono',monospace;font-size:8.5px;color:#8C929A;margin-top:5px;text-align:right">{{ l.pctLabel }}</div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+
+              <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.2em;color:#8C929A;margin:20px 2px 9px">ATALHOS</div>
+              <div style="border:1px solid #292D32;border-radius:14px;background:#15181C;overflow:hidden">
+                <sc-for list="{{ moreLinks }}" as="m" hint-placeholder-count="5">
+                  <div onClick="{{ m.go }}" style="{{ m.rowStyle }}">
+                    <div style="flex:1;font-size:13px">{{ m.label }}</div>
+                    <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#8C929A;letter-spacing:.1em">{{ m.hint }}</div>
+                    <div style="color:#5E656D;font-size:13px">›</div>
+                  </div>
+                </sc-for>
+              </div>
+
+              <div style="margin-top:20px;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.2em;line-height:1.9;color:#8C929A">MAIS QUE UM APP.<br>É O SEU PROCESSO.</div>
+            </div>
+          </sc-if>
+
+        </div>
+
+        <sc-if value="{{ fold }}" hint-placeholder-val="{{ false }}">
+          <div style="width:360px;flex:none;border-left:1px solid #292D32;background:#0D1012;overflow-y:auto;padding:14px 16px 24px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.2em;color:#8C929A;margin-bottom:10px">PRÓXIMO PASSO</div>
+            <div style="border:1px solid #C6FF00;border-radius:14px;background:linear-gradient(160deg,rgba(198,255,0,.10),rgba(198,255,0,0) 70%),#15181C;padding:15px">
+              <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:26px;line-height:1">{{ nextBlockName }}</div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;color:#8C929A;margin-top:6px">{{ nextBlockMeta }}</div>
+              <button onClick="{{ startNext }}" style="margin-top:13px;width:100%;padding:11px;border:none;border-radius:9px;background:#C6FF00;color:#0B0D0F;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:.1em;cursor:pointer">INICIAR SESSÃO</button>
+            </div>
+
+            <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.2em;color:#8C929A;margin:20px 0 10px">PROGRESSÃO — HANDSTAND</div>
+            <div style="border:1px solid #292D32;border-radius:14px;background:#15181C;padding:14px 15px">
+              <sc-for list="{{ handstandSteps }}" as="s" hint-placeholder-count="7">
+                <div style="display:flex;align-items:stretch;gap:12px">
+                  <div style="width:14px;display:flex;flex-direction:column;align-items:center">
+                    <div style="{{ s.dotStyle }}"></div>
+                    <div style="{{ s.lineStyle }}"></div>
+                  </div>
+                  <div style="{{ s.textStyle }}">{{ s.label }}<span style="{{ s.tagStyle }}">{{ s.tag }}</span></div>
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.2em;color:#8C929A;margin:20px 0 10px">PROGRESSO DA SEMANA</div>
+            <div style="display:flex;justify-content:space-between">
+              <sc-for list="{{ weekDots }}" as="d" hint-placeholder-count="7">
+                <div style="display:flex;flex-direction:column;align-items:center;gap:7px">
+                  <div style="{{ d.dotStyle }}"></div>
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:8.5px;color:#8C929A">{{ d.day }}</div>
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="margin-top:24px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;line-height:1.9;color:#8C929A">MAIS QUE UM APP.<br>É O SEU PROCESSO.</div>
+          </div>
+        </sc-if>
+      </div>
+
+      <div style="flex:none;border-top:1px solid #292D32;background:#0D1012;display:grid;grid-template-columns:repeat(5,1fr);padding:9px 6px 14px">
+        <sc-for list="{{ nav }}" as="n" hint-placeholder-count="5">
+          <button onClick="{{ n.go }}" style="{{ n.style }}">
+            <div style="{{ n.iconStyle }}"></div>
+            <span style="font-size:10px;letter-spacing:.02em">{{ n.label }}</span>
+          </button>
+        </sc-for>
+      </div>
+
+      <sc-if value="{{ inSession }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;background:#0B0D0F;display:flex;flex-direction:column;z-index:20">
+          <div style="flex:none;padding:16px 18px 12px;border-bottom:1px solid #292D32">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <button onClick="{{ exitSession }}" style="background:none;border:1px solid #292D32;border-radius:8px;color:#8C929A;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;padding:7px 10px;cursor:pointer">← SAIR</button>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.14em;color:#8C929A">{{ sessionCounter }}</div>
+            </div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:32px;line-height:1;margin-top:12px">{{ sessionName }}</div>
+            <div style="display:flex;gap:4px;margin-top:12px">
+              <sc-for list="{{ sessionProgress }}" as="p" hint-placeholder-count="4">
+                <div style="{{ p.style }}"></div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="{{ sessionBodyStyle }}">
+           <div style="{{ sessionColA }}">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;color:#C6FF00;margin-bottom:10px">{{ exBreadcrumb }}</div>
+
+            <div style="position:relative;border:1px solid #292D32;border-radius:14px;overflow:hidden;background:#101316;aspect-ratio:16/10;display:flex;align-items:center;justify-content:center">
+              <div style="position:absolute;inset:0;background-image:repeating-linear-gradient(115deg,#16191C 0 10px,#0F1214 10px 20px)"></div>
+              <div style="position:relative;display:flex;flex-direction:column;align-items:center;gap:10px">
+                <div style="width:56px;height:56px;border-radius:50%;border:1.5px solid #C6FF00;color:#C6FF00;display:flex;align-items:center;justify-content:center;font-size:18px">▶</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;color:#8C929A">VÍDEO DE DEMONSTRAÇÃO</div>
+              </div>
+              <div style="position:absolute;left:12px;top:12px;font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.12em;color:#6C737B;border:1px solid #292D32;padding:4px 7px;border-radius:4px;background:rgba(11,13,15,.6)">EXECUÇÃO LENTA · 12s</div>
+            </div>
+
+            <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:34px;line-height:1.02;margin:16px 0 4px">{{ exName }}</div>
+            <div style="font-size:12.5px;color:#8C929A;line-height:1.5">{{ exObjective }}</div>
+           </div>
+           <div style="{{ sessionColB }}">
+
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:14px">
+              <div style="border:1px solid #292D32;border-radius:11px;background:#15181C;padding:11px">
+                <div style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.14em;color:#8C929A">SÉRIES</div>
+                <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:26px;margin-top:4px">{{ exSets }}</div>
+              </div>
+              <div style="border:1px solid #292D32;border-radius:11px;background:#15181C;padding:11px">
+                <div style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.14em;color:#8C929A">EXECUÇÃO</div>
+                <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:26px;margin-top:4px">{{ exReps }}</div>
+              </div>
+              <div style="border:1px solid #292D32;border-radius:11px;background:#15181C;padding:11px">
+                <div style="font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.14em;color:#8C929A">DESCANSO</div>
+                <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:26px;margin-top:4px">{{ exRest }}</div>
+              </div>
+            </div>
+
+            <div style="border:1px solid #292D32;border-radius:12px;background:#15181C;padding:13px 14px;margin-top:12px">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.16em;color:#8C929A;margin-bottom:9px">COMO EXECUTAR</div>
+              <sc-for list="{{ exCues }}" as="c" hint-placeholder-count="3">
+                <div style="display:flex;gap:9px;margin-bottom:7px">
+                  <div style="width:5px;height:5px;background:#C6FF00;border-radius:50%;margin-top:6px;flex:none"></div>
+                  <div style="font-size:12.5px;line-height:1.45;color:#F4F4F2">{{ c }}</div>
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="border:1px solid #3A2F1A;border-radius:12px;background:#17150F;padding:13px 14px;margin-top:10px">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.16em;color:#C9A227;margin-bottom:9px">ERROS MAIS COMUNS</div>
+              <sc-for list="{{ exErrors }}" as="e" hint-placeholder-count="2">
+                <div style="display:flex;gap:9px;margin-bottom:7px">
+                  <div style="width:5px;height:5px;background:#C9A227;margin-top:6px;flex:none;transform:rotate(45deg)"></div>
+                  <div style="font-size:12.5px;line-height:1.45;color:#C7C3B6">{{ e }}</div>
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.16em;color:#8C929A;margin:18px 2px 9px">SÉRIES</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <sc-for list="{{ setRows }}" as="s" hint-placeholder-count="3">
+                <div onClick="{{ s.toggle }}" style="{{ s.style }}">
+                  <div style="{{ s.dotStyle }}"></div>
+                  <div style="flex:1;font-size:13px">{{ s.label }}</div>
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#8C929A">{{ s.detail }}</div>
+                </div>
+              </sc-for>
+            </div>
+           </div>
+          </div>
+
+          <div style="flex:none;border-top:1px solid #292D32;background:#0D1012;padding:12px 18px 18px;display:flex;align-items:center;gap:10px">
+            <div style="{{ restStyle }}">{{ restLabel }}</div>
+            <button onClick="{{ nextExercise }}" style="flex:1;padding:14px;border:none;border-radius:11px;background:#C6FF00;color:#0B0D0F;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;letter-spacing:.1em;cursor:pointer">{{ nextLabel }}</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showDone }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;background:rgba(11,13,15,.88);display:flex;align-items:center;justify-content:center;padding:30px;z-index:30">
+          <div style="border:1px solid #C6FF00;border-radius:16px;background:#15181C;padding:24px;text-align:center;max-width:300px">
+            <div style="width:54px;height:54px;border-radius:50%;background:#C6FF00;color:#0B0D0F;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 14px">✓</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:30px;line-height:1">SESSÃO CONCLUÍDA</div>
+            <div style="font-size:12.5px;color:#8C929A;margin-top:9px;line-height:1.5">{{ doneNote }}</div>
+            <button onClick="{{ closeDone }}" style="margin-top:16px;width:100%;padding:12px;border:none;border-radius:10px;background:#C6FF00;color:#0B0D0F;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:.1em;cursor:pointer">VOLTAR PARA HOJE</button>
+          </div>
+        </div>
+      </sc-if>
+
+    </div>
+  </div>
+
+  <div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.2em;color:#4E545B;text-align:center">TREINE · EVOLUA · REPITA — PROTÓTIPO COM DADOS FICTÍCIOS</div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:900,&quot;height&quot;:960}}">
+const ACC = '#C6FF00', TXT = '#F4F4F2', SEC = '#8C929A', BRD = '#292D32', SUR = '#15181C';
+const MONO = "'JetBrains Mono',monospace", COND = "'Barlow Condensed',sans-serif";
+
+const BLOCKS = [
+  { id:'mob', name:'MOBILIDADE', glyph:'M', prio:'PRIORIDADE ALTA', meta:'12 MIN · PÓS BOX · 4 EXERCÍCIOS',
+    obj:'Dorsiflexão de tornozelo e cadeia posterior — base do agachamento profundo.',
+    tags:['TORNOZELO','QUADRIL','POSTERIOR'], area:'MOBILIDADE', limit:'DORSIFLEXÃO DE TORNOZELO',
+    ex:[
+      { name:'Ankle rock contra a parede', obj:'Ganhar amplitude de dorsiflexão sem perder o calcanhar no chão.', sets:'3', reps:'10 /lado', rest:'30s',
+        cues:['Joelho viaja sobre o dedo médio do pé.','Calcanhar colado no chão durante todo o movimento.','Pressione por 2 segundos no fim da amplitude.'],
+        errs:['Levantar o calcanhar para ganhar amplitude falsa.','Joelho caindo para dentro.'] },
+      { name:'Agachamento com apoio (goblet hold)', obj:'Sustentar a posição de fundo e abrir o quadril ativamente.', sets:'3', reps:'40s', rest:'45s',
+        cues:['Cotovelos empurram os joelhos para fora.','Peito alto, coluna longa.','Respire 4 ciclos no fundo.'],
+        errs:['Arredondar a lombar no fundo.','Peso todo na ponta do pé.'] },
+      { name:'Alongamento ativo de cadeia posterior', obj:'Liberar isquiotibiais e panturrilha sem perder tensão ativa.', sets:'2', reps:'45s /lado', rest:'20s',
+        cues:['Quadril alto, joelho levemente flexionado.','Puxe a ponta do pé em direção à canela.'],
+        errs:['Forçar o joelho em extensão total.','Prender a respiração.'] },
+      { name:'Mobilização torácica no rolo', obj:'Extensão torácica para melhorar front rack e overhead.', sets:'2', reps:'8 reps', rest:'30s',
+        cues:['Rolo na altura das escápulas.','Quadril no chão, costelas fechadas.'],
+        errs:['Estender pela lombar em vez do torácico.'] }
+    ]},
+  { id:'gin', name:'GINÁSTICA', glyph:'G', prio:'PROGRESSÃO', meta:'18 MIN · HANDSTAND FOUNDATION',
+    obj:'Construir suporte de ombro e controle invertido — etapa 3 de 7.',
+    tags:['OMBRO','CORE','SUPORTE'], area:'GINÁSTICA', limit:'SUPORTE DE PESO INVERTIDO',
+    ex:[
+      { name:'Pike position no banco', obj:'Acostumar o ombro a sustentar carga em ângulo fechado.', sets:'4', reps:'30s', rest:'60s',
+        cues:['Ombros à frente das mãos.','Empurre o chão e eleve as escápulas.'],
+        errs:['Cotovelos flexionados.','Lombar em hiperextensão.'] },
+      { name:'Wall walk parcial', obj:'Transferir o peso para as mãos com controle.', sets:'3', reps:'4 reps', rest:'75s',
+        cues:['Mãos caminham em passos curtos.','Costelas fechadas, glúteo ativo.'],
+        errs:['Descer em queda livre.','Cabeça olhando para a parede.'] },
+      { name:'Hollow hold', obj:'Core em linha — pré-requisito do handstand livre.', sets:'3', reps:'30s', rest:'45s',
+        cues:['Lombar pressionada no chão.','Braços ao lado das orelhas.'],
+        errs:['Lombar arqueada.','Queixo projetado.'] }
+    ]},
+  { id:'core', name:'CORE', glyph:'C', prio:'OPCIONAL', meta:'8 MIN · FINISHER',
+    obj:'Compressão ativa para toes-to-bar e estabilidade em ciclos longos.',
+    tags:['COMPRESSÃO','ANTI-EXTENSÃO'], area:'CORE', limit:'COMPRESSÃO ATIVA',
+    ex:[
+      { name:'V-up progressivo', obj:'Compressão coordenada de quadril e tronco.', sets:'3', reps:'12 reps', rest:'40s',
+        cues:['Movimento simultâneo de braços e pernas.','Desça devagar.'],
+        errs:['Usar impulso do pescoço.','Pernas flexionando por cadência.'] },
+      { name:'Hollow rock', obj:'Manter tensão em linha durante o balanço.', sets:'3', reps:'20 reps', rest:'40s',
+        cues:['Balanço vem do tronco, não das pernas.'],
+        errs:['Perder o contato lombar com o chão.'] }
+    ]}
+];
+
+const HANDSTAND = ['Mobilidade overhead','Suporte de peso','Pike position','Wall walk','Handstand na parede','Controle de handstand','Handstand livre'];
+
+class Component extends DCLogic {
+  state = {
+    tab: 'hoje', evoTab: 'resumo', fold: false,
+    sessionId: null, exIdx: 0, setsDone: {}, showDone: false, rest: 0,
+    checks: { c1:true, c2:false, c3:false, c4:false, c5:false, c6:true },
+    mealsDone: { m1:true, m2:true, m3:false, m4:false, m5:false },
+    water: 2.1, blockDone: { mob:false, gin:false, core:false }
+  };
+
+  componentWillUnmount(){ clearInterval(this._t); }
+
+  startRest(){
+    clearInterval(this._t);
+    this.setState({ rest: 45 });
+    this._t = setInterval(() => this.setState(s => {
+      if (s.rest <= 1) { clearInterval(this._t); return { rest: 0 }; }
+      return { rest: s.rest - 1 };
+    }), 1000);
+  }
+
+  pill(active){
+    return { padding:'7px 13px', borderRadius:'999px', border:'none', cursor:'pointer',
+      fontFamily:MONO, fontSize:'9.5px', letterSpacing:'.12em',
+      background: active ? ACC : 'transparent', color: active ? '#0B0D0F' : SEC };
+  }
+
+  renderVals(){
+    const s = this.state;
+    const block = BLOCKS.find(b => b.id === s.sessionId) || null;
+    const ex = block ? block.ex[Math.min(s.exIdx, block.ex.length - 1)] : null;
+    const nextBlock = BLOCKS.find(b => !s.blockDone[b.id]) || BLOCKS[0];
+
+    const v = {
+      fold: s.fold,
+      setPhone: () => this.setState({ fold:false }),
+      setFold: () => this.setState({ fold:true }),
+      phoneBtn: this.pill(!s.fold),
+      foldBtn: this.pill(s.fold),
+      deviceStyle: {
+        position:'relative', width:'100%', maxWidth: s.fold ? '860px' : '404px',
+        height: s.fold ? '760px' : '858px', background:'#0B0D0F',
+        border:'9px solid #1B1F23', borderRadius: s.fold ? '26px' : '42px',
+        boxShadow:'0 40px 90px rgba(0,0,0,.65), 0 0 0 1px #2C3238', overflow:'hidden'
+      },
+      isHoje: s.tab === 'hoje', isSemana: s.tab === 'semana', isFood: s.tab === 'food', isEvo: s.tab === 'evo',
+      isMais: s.tab === 'mais',
+      sessionBodyStyle: { flex:1, minHeight:0, overflowY:'auto', padding:'16px 18px 28px',
+        display: s.fold ? 'grid' : 'block',
+        gridTemplateColumns: s.fold ? 'minmax(0,1.05fr) minmax(0,1fr)' : 'none',
+        columnGap: s.fold ? '18px' : '0', alignItems:'start' },
+      sessionColA: { minWidth:0, maxWidth: s.fold ? 'none' : '100%' },
+      sessionColB: { minWidth:0 },
+      isEvoResumo: s.evoTab === 'resumo', isEvoMed: s.evoTab === 'medidas', isEvoProg: s.evoTab === 'progressoes',
+      inSession: !!block, showDone: s.showDone,
+      closeDone: () => this.setState({ showDone:false, tab:'hoje' }),
+      doneNote: block ? block.obj : 'Trabalho complementar registrado no seu histórico.',
+      startNext: () => this.setState({ sessionId: nextBlock.id, exIdx:0, setsDone:{} }),
+      nextBlockName: nextBlock.name,
+      nextBlockMeta: nextBlock.meta
+    };
+
+    v.blocks = BLOCKS.map(b => {
+      const done = s.blockDone[b.id];
+      const hero = b.id === 'mob' && !done;
+      return { ...b,
+        cardStyle: { border:`1px solid ${done ? '#23272B' : hero ? 'rgba(198,255,0,.35)' : BRD}`, borderRadius:'14px',
+          background: done ? '#101316' : SUR, padding:'15px 15px 13px', opacity: done ? .6 : 1 },
+        iconStyle: { width:'40px', height:'40px', borderRadius:'10px', flex:'none', display:'flex',
+          alignItems:'center', justifyContent:'center',
+          border:`1px solid ${hero ? 'rgba(198,255,0,.4)' : BRD}`, color: hero ? ACC : TXT,
+          background: hero ? 'rgba(198,255,0,.07)' : 'transparent' },
+        prioStyle: { fontFamily:MONO, fontSize:'8px', letterSpacing:'.14em',
+          color: b.prio === 'PRIORIDADE ALTA' ? ACC : SEC,
+          border:`1px solid ${b.prio === 'PRIORIDADE ALTA' ? 'rgba(198,255,0,.35)' : BRD}`,
+          padding:'3px 6px', borderRadius:'4px' },
+        btnLabel: done ? 'CONCLUÍDO' : 'INICIAR',
+        btnStyle: { padding:'10px 16px', borderRadius:'9px', cursor: done ? 'default' : 'pointer',
+          fontFamily:COND, fontWeight:700, fontSize:'15px', letterSpacing:'.1em', flex:'none',
+          border: done ? `1px solid ${BRD}` : hero ? 'none' : `1px solid ${TXT}`,
+          background: done ? 'transparent' : hero ? ACC : 'transparent',
+          color: done ? SEC : hero ? '#0B0D0F' : TXT },
+        start: () => done ? null : this.setState({ sessionId: b.id, exIdx:0, setsDone:{} })
+      };
+    });
+    v.blocksDone = BLOCKS.filter(b => s.blockDone[b.id]).length;
+
+    const CHECK = [
+      ['c1','Treino de CrossFit','07:00'], ['c2','Mobilidade','12 min'], ['c3','Ginástica','18 min'],
+      ['c4','Bater meta de água','2,1 / 3,5 L'], ['c5','Seguir alimentação','60%'], ['c6','Registrar peso','113,8 kg']
+    ];
+    v.checklist = CHECK.map(([id,label,value], i) => {
+      const on = s.checks[id];
+      return { label, value,
+        rowStyle: { display:'flex', alignItems:'center', gap:'12px', padding:'13px 15px', cursor:'pointer',
+          borderTop: i ? '1px solid #23272B' : 'none' },
+        dotStyle: { width:'18px', height:'18px', borderRadius:'50%', flex:'none',
+          border:`1.5px solid ${on ? ACC : '#3A3F45'}`, background: on ? ACC : 'transparent' },
+        labelStyle: { flex:1, fontSize:'13px', color: on ? SEC : TXT, textDecoration: on ? 'line-through' : 'none' },
+        toggle: () => this.setState(st => ({ checks: { ...st.checks, [id]: !st.checks[id] } })) };
+    });
+    v.checkDone = Object.values(s.checks).filter(Boolean).length;
+
+    v.stats = [
+      { label:'PESO', value:'113,8', sub:'-0,6 kg semana', pct:60 },
+      { label:'PASSOS', value:'8.432', sub:'meta 10k', pct:84 },
+      { label:'ÁGUA', value:'2,1 L', sub:'meta 3,5 L', pct:60 }
+    ].map(x => ({ ...x, barStyle: { width:`${x.pct}%`, height:'100%', background:ACC } }));
+
+    const WEEK = [
+      ['SEG','21/09','CrossFit',[['Mobilidade A','done'],['Core','done']],'CONCLUÍDO'],
+      ['TER','22/09','CrossFit',[['Mobilidade B','today'],['Engine','today']],'HOJE'],
+      ['QUA','23/09','CrossFit',[['Ginástica','next'],['Core','next']],'PLANEJADO'],
+      ['QUI','24/09','CrossFit',[['Mobilidade B','next'],['Técnica','next']],'PLANEJADO'],
+      ['SEX','25/09','CrossFit',[['Mobilidade C','next'],['Engine','next']],'PLANEJADO'],
+      ['SÁB','26/09','—',[['Skill opcional','next']],'LEVE'],
+      ['DOM','27/09','—',[['Recuperação','rest']],'DESCANSO']
+    ];
+    v.week = WEEK.map(([day,date,box,work,state]) => {
+      const today = state === 'HOJE';
+      return { day, date, box, state,
+        rowStyle: { display:'flex', alignItems:'stretch', border:`1px solid ${today ? 'rgba(198,255,0,.4)' : BRD}`,
+          borderRadius:'12px', background: state === 'DESCANSO' ? '#101316' : SUR, overflow:'hidden' },
+        dayStyle: { width:'62px', flex:'none', padding:'12px 0', display:'flex', flexDirection:'column',
+          alignItems:'center', justifyContent:'center',
+          borderRight:`1px solid ${BRD}`, background: today ? 'rgba(198,255,0,.08)' : 'transparent',
+          color: today ? ACC : TXT },
+        stateStyle: { width:'74px', flex:'none', display:'flex', alignItems:'center', justifyContent:'center',
+          fontFamily:MONO, fontSize:'8px', letterSpacing:'.1em', textAlign:'center',
+          color: state === 'CONCLUÍDO' ? ACC : state === 'HOJE' ? ACC : SEC,
+          borderLeft:`1px solid ${BRD}` },
+        work: work.map(([label,kind]) => ({ label,
+          style: { fontFamily:MONO, fontSize:'8.5px', letterSpacing:'.08em', padding:'5px 8px', borderRadius:'5px',
+            border:`1px solid ${kind === 'today' ? 'rgba(198,255,0,.45)' : BRD}`,
+            background: kind === 'done' ? 'rgba(198,255,0,.10)' : kind === 'today' ? 'rgba(198,255,0,.14)' : 'transparent',
+            color: kind === 'rest' ? SEC : kind === 'next' ? TXT : ACC } }))
+      };
+    });
+
+    v.kcalNow = '1.140';
+    v.kcalDash = `${Math.round(2 * Math.PI * 44 * 0.6)} ${Math.round(2 * Math.PI * 44)}`;
+    v.macros = [
+      { name:'Proteína', val:'148 / 200 g', pct:74 },
+      { name:'Carboidrato', val:'120 / 190 g', pct:63 },
+      { name:'Gordura', val:'32 / 70 g', pct:46 }
+    ].map(m => ({ ...m, barStyle: { width:`${m.pct}%`, height:'100%', background: ACC } }));
+
+    const MEALS = [
+      ['m1','Café da manhã','07:00','480','38 g','Ovos, aveia, banana, pasta de amendoim'],
+      ['m2','Lanche da manhã','10:00','240','25 g','Iogurte grego + whey + frutas'],
+      ['m3','Almoço','13:00','620','52 g','Arroz, feijão, frango grelhado, salada'],
+      ['m4','Lanche da tarde','16:30','260','28 g','Tapioca com frango desfiado'],
+      ['m5','Jantar','20:00','300','45 g','Peixe, legumes assados, batata-doce']
+    ];
+    v.meals = MEALS.map(([id,name,time,kcal,prot,items]) => {
+      const on = s.mealsDone[id];
+      return { name, time, kcal, prot, items, mark: on ? '✓' : '',
+        rowStyle: { display:'flex', alignItems:'center', gap:'12px', padding:'12px 13px',
+          border:`1px solid ${on ? 'rgba(198,255,0,.28)' : BRD}`, borderRadius:'13px',
+          background: on ? 'rgba(198,255,0,.04)' : SUR },
+        btnStyle: { width:'30px', height:'30px', borderRadius:'50%', flex:'none', cursor:'pointer',
+          border:`1.5px solid ${on ? ACC : '#3A3F45'}`, background: on ? ACC : 'transparent',
+          color:'#0B0D0F', fontSize:'14px', lineHeight:1 },
+        toggle: () => this.setState(st => ({ mealsDone: { ...st.mealsDone, [id]: !st.mealsDone[id] } })) };
+    });
+    v.waterLabel = `${s.water.toFixed(1).replace('.', ',')} L`;
+    v.waterBar = { width:`${Math.min(100, (s.water / 3.5) * 100)}%`, height:'100%', background:ACC };
+    v.addWater = () => this.setState(st => ({ water: Math.min(3.5, st.water + 0.25) }));
+
+    v.evoTabs = [['resumo','Resumo'],['medidas','Medidas'],['progressoes','Progressões']].map(([id,label]) => ({
+      label, style: { ...this.pill(s.evoTab === id), flex:1 }, go: () => this.setState({ evoTab:id }) }));
+
+    const spark = arr => arr.map((y, i) => `${(i / (arr.length - 1)) * 100},${30 - y * 26}`).join(' ');
+    v.metrics = [
+      { name:'Peso', value:'113,8 kg', base:'116,4', delta:'-2,6 kg', up:true, d:[1,.9,.8,.75,.6,.5] },
+      { name:'Pull-ups', value:'4 reps', base:'0', delta:'+4', up:true, d:[0,0,.2,.4,.6,.9] },
+      { name:'Deadlift', value:'160 kg', base:'120', delta:'+40 kg', up:true, d:[.1,.3,.4,.6,.75,.9] },
+      { name:'5 km', value:'31:20', base:'36:10', delta:'-4:50', up:true, d:[1,.85,.7,.6,.45,.3] },
+      { name:'Handstand', value:'12 s', base:'0 s', delta:'+12 s', up:true, d:[0,.1,.2,.45,.6,.8] },
+      { name:'Dorsiflexão', value:'11 cm', base:'6 cm', delta:'+5 cm', up:true, d:[.15,.3,.4,.55,.7,.85] }
+    ].map(m => ({ ...m, points: spark(m.d),
+      deltaStyle: { fontFamily:MONO, fontSize:'9.5px', color: ACC } }));
+
+    v.measures = [
+      ['Peso','116,4 kg','113,8 kg','-2,6'], ['Gordura corporal','28,4%','25,1%','-3,3'],
+      ['Cintura','104 cm','98 cm','-6'], ['Peito','108 cm','109 cm','+1'],
+      ['Braço','36 cm','37,5 cm','+1,5'], ['Coxa','62 cm','63 cm','+1']
+    ].map(([name,base,now,delta]) => ({ name, base, now, delta,
+      deltaStyle: { fontFamily:MONO, fontSize:'10px', width:'52px', textAlign:'right', color: ACC } }));
+
+    const steps = (list, current) => list.map((label, i) => ({
+      label,
+      tag: i < current ? '  CONCLUÍDO' : i === current ? '  VOCÊ ESTÁ AQUI' : '',
+      tagStyle: { fontFamily:MONO, fontSize:'8px', letterSpacing:'.1em', color: i === current ? ACC : '#5E656D', whiteSpace:'pre' },
+      dotStyle: { width: i === current ? '13px' : '9px', height: i === current ? '13px' : '9px', borderRadius:'50%',
+        marginTop:'6px', flex:'none',
+        background: i <= current ? ACC : 'transparent', border:`1.5px solid ${i <= current ? ACC : '#3A3F45'}`,
+        boxShadow: i === current ? '0 0 0 4px rgba(198,255,0,.15)' : 'none' },
+      lineStyle: { flex:1, width:'1.5px', minHeight: i === list.length - 1 ? '0' : '16px',
+        background: i < current ? ACC : '#2B3036' },
+      textStyle: { padding:'3px 0 12px', fontSize:'12.5px',
+        color: i < current ? SEC : i === current ? TXT : '#6C737B',
+        fontWeight: i === current ? 600 : 400 }
+    }));
+    v.handstandSteps = steps(HANDSTAND, 2);
+    v.progressions = [
+      { name:'HANDSTAND', stageLabel:'ETAPA 3 / 7', note:'Onde estou → próximo passo → objetivo. Sem pular fases.', steps: steps(HANDSTAND, 2) },
+      { name:'PULL-UP', stageLabel:'ETAPA 4 / 6', note:'4 reps estritas. Próximo passo: 8 reps sem quebra de linha.',
+        steps: steps(['Scapular pull','Hold ativo','Negativa 5s','Pull-up estrita','8 reps estritas','Chest-to-bar'], 3) }
+    ];
+
+    v.weekDots = ['SEG','TER','QUA','QUI','SEX','SÁB','DOM'].map((day, i) => ({ day,
+      dotStyle: { width:'26px', height:'26px', borderRadius:'50%',
+        background: i === 0 ? ACC : 'transparent', border:`1.5px solid ${i === 0 ? ACC : '#3A3F45'}` } }));
+
+    v.limitations = [
+      ['Dorsiflexão de tornozelo','Agachamento perde profundidade aos 90°',55],
+      ['Extensão torácica','Front rack com cotovelos baixos',40],
+      ['Ombro overhead','Perda de linha no press acima da cabeça',35],
+      ['Compressão ativa','Toes-to-bar sem controle de balanço',60]
+    ].map(([area,note,pct]) => ({ area, note, pctLabel:`${pct}%`,
+      rowStyle: { display:'flex', alignItems:'center', gap:'12px', padding:'13px 15px', borderBottom:'1px solid #23272B' },
+      barStyle: { width:`${pct}%`, height:'100%', background: ACC } }));
+
+    v.moreLinks = [
+      ['Progressões','7 habilidades','evo'],
+      ['Histórico de sessões','38 registros',null],
+      ['Biblioteca de exercícios','142 vídeos',null],
+      ['Plano semanal do box','Semana 01',null],
+      ['Configurações','Notificações · unidades',null]
+    ].map(([label,hint,go]) => ({ label, hint,
+      rowStyle: { display:'flex', alignItems:'center', gap:'12px', padding:'14px 15px', cursor:'pointer', borderBottom:'1px solid #23272B' },
+      go: () => go ? this.setState({ tab:go, evoTab:'progressoes' }) : null }));
+
+    const NAV = [['hoje','Hoje'],['semana','Semana'],['food','Alimentação'],['evo','Evolução'],['mais','Mais']];
+    v.nav = NAV.map(([id,label]) => {
+      const on = s.tab === id;
+      return { label,
+        style: { background:'none', border:'none', cursor:'pointer', display:'flex', flexDirection:'column',
+          alignItems:'center', gap:'6px', padding:'4px 0', color: on ? ACC : SEC, fontFamily:'Inter,sans-serif' },
+        iconStyle: { width:'17px', height:'17px', borderRadius: id === 'mais' ? '50%' : '4px',
+          border:`1.6px solid ${on ? ACC : SEC}`, background: on ? 'rgba(198,255,0,.18)' : 'transparent' },
+        go: () => this.setState({ tab:id }) };
+    });
+
+    if (block && ex) {
+      const key = `${block.id}-${s.exIdx}`;
+      const done = s.setsDone[key] || 0;
+      const total = parseInt(ex.sets, 10);
+      v.sessionName = block.name;
+      v.sessionCounter = `EXERCÍCIO ${s.exIdx + 1} / ${block.ex.length}`;
+      v.sessionProgress = block.ex.map((_, i) => ({
+        style: { flex:1, height:'3px', borderRadius:'2px', background: i <= s.exIdx ? ACC : '#2B3036' } }));
+      v.exBreadcrumb = `${block.area} → ${block.limit} → ${ex.name.toUpperCase()}`;
+      v.exName = ex.name; v.exObjective = ex.obj; v.exSets = ex.sets; v.exReps = ex.reps; v.exRest = ex.rest;
+      v.exCues = ex.cues; v.exErrors = ex.errs;
+      v.setRows = Array.from({ length: total }, (_, i) => {
+        const on = i < done;
+        return { label: `Série ${i + 1}`, detail: `${ex.reps} · descanso ${ex.rest}`,
+          style: { display:'flex', alignItems:'center', gap:'12px', padding:'13px 14px', cursor:'pointer',
+            border:`1px solid ${on ? 'rgba(198,255,0,.3)' : BRD}`, borderRadius:'11px',
+            background: on ? 'rgba(198,255,0,.05)' : SUR },
+          dotStyle: { width:'18px', height:'18px', borderRadius:'50%', flex:'none',
+            border:`1.5px solid ${on ? ACC : '#3A3F45'}`, background: on ? ACC : 'transparent' },
+          toggle: () => {
+            const nd = i < done ? i : i + 1;
+            if (nd > done) this.startRest();
+            this.setState(st => ({ setsDone: { ...st.setsDone, [key]: nd } }));
+          } };
+      });
+      v.restLabel = s.rest > 0 ? `${s.rest}s` : 'DESCANSO';
+      v.restStyle = { width:'92px', flex:'none', padding:'13px 0', textAlign:'center', borderRadius:'11px',
+        border:`1px solid ${s.rest > 0 ? ACC : BRD}`, fontFamily: s.rest > 0 ? COND : MONO,
+        fontWeight: s.rest > 0 ? 700 : 400, fontSize: s.rest > 0 ? '20px' : '9.5px',
+        letterSpacing: s.rest > 0 ? '0' : '.12em', color: s.rest > 0 ? ACC : SEC,
+        animation: s.rest > 0 ? 'pf-pulse 2s ease-in-out infinite' : 'none' };
+      const last = s.exIdx >= block.ex.length - 1;
+      v.nextLabel = last ? 'CONCLUIR SESSÃO' : 'PRÓXIMO EXERCÍCIO';
+      v.nextExercise = () => {
+        clearInterval(this._t);
+        if (last) this.setState(st => ({ sessionId:null, rest:0, showDone:true,
+          blockDone: { ...st.blockDone, [block.id]: true } }));
+        else this.setState(st => ({ exIdx: st.exIdx + 1, rest:0 }));
+      };
+      v.exitSession = () => { clearInterval(this._t); this.setState({ sessionId:null, rest:0 }); };
+    }
+
+    return v;
+  }
+}
+
+</script>
+</body>
+</html>
