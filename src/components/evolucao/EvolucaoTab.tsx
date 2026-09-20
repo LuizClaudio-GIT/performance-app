@@ -163,6 +163,7 @@ export function EvolucaoTab() {
               + NOVO WOD
             </button>
           </div>
+          {data.workoutDefs.length === 0 && <div className="pf-empty-state">Nenhum WOD cadastrado. Toque em "+ Novo WOD" para criar um.</div>}
           <div className="pf-workout-def-list">
             {data.workoutDefs.map((def) => {
               const attempts = data.workoutAttempts.filter((a) => a.workoutDefId === def.id);
@@ -187,6 +188,7 @@ export function EvolucaoTab() {
               + NOVA PROGRESSÃO
             </button>
           </div>
+          {data.progressions.length === 0 && <div className="pf-empty-state">Nenhuma progressão cadastrada. Toque em "+ Nova progressão" para começar.</div>}
           <div className="pf-progressions-list">
             {data.progressions.map((p) => {
               const def = findProgressionDef(data, p.id);

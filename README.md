@@ -1,8 +1,8 @@
 # Performance
 
-App pessoal de acompanhamento de evolução no CrossFit — treino, alimentação, hidratação, peso, medidas, benchmarks e progressões de habilidades, com o objetivo de longo prazo de evoluir até nível competitivo.
+App pessoal de acompanhamento de **performance esportiva** no CrossFit — WOD estruturado, PRs reais, benchmarks nomeados, progressões de habilidade, alimentação, hidratação, peso, medidas e recuperação — com o objetivo de longo prazo de evoluir até nível competitivo. A pergunta que o produto tenta responder é: "estou realmente ficando um atleta melhor?"
 
-Roda 100% no navegador, sem backend: os dados ficam no `localStorage` do dispositivo.
+Roda 100% no navegador, sem backend: os dados ficam no `localStorage` do dispositivo, com schema versionado e migração automática (nenhuma atualização do app apaga histórico real).
 
 ## Stack
 
@@ -49,41 +49,42 @@ npm run lint     # tsc --noEmit
 
 ```
 src/
-  data/        modelo de dados (schema.ts), catálogo de exercícios/progressões (catalog.ts, conteúdo estático), seed de demonstração (seed.ts)
-  storage/     camada de leitura/escrita em localStorage, versionamento de schema, export/import
-  state/       AppState.tsx (Context + Provider, única fonte de verdade da UI) e logic.ts (funções puras de derivação: checklist, status semanal, séries de métricas, ciclo de vida de sessão)
+  data/        schema.ts (modelo de dados), migrations.ts (migração versionada v1->v2...), catalog.ts (conteúdo estático: blocos, progressões-padrão, benchmarks nomeados, tabela movimento->limitação), seed.ts (demonstração)
+  storage/     leitura/escrita em localStorage, execução da cadeia de migração, export/import
+  state/       AppState.tsx (Context + Provider, única fonte de verdade da UI), logic.ts (derivação: checklist, status semanal, PR de métricas, histórico/volume de exercício), workouts.ts (comparação de resultado de WOD, PR de WOD, "última vez"), recommend.ts (motor de sugestão baseado em regras)
   components/  UI por aba (hoje, semana, alimentacao, evolucao, mais), session/ (overlay de treino complementar), common/ (Modal, Toast, ConfirmDialog, LogStatModal), layout/ (Header, BottomNav, SidePanel)
   lib/date.ts  utilitários de data/hora reais em pt-BR (sem hardcode de datas)
-  styles/      CSS por área + tokens.css (cores, fontes, breakpoint)
+  styles/      CSS por área + tokens.css (cores, fontes, breakpoint) + wod.css (WOD/PR/benchmark/progressão/recomendação)
 ```
 
-Fluxo de dados: `AppState.tsx` carrega o `AppData` do storage uma vez, expõe ações (métodos) que mutam o estado React e persistem a cada mudança (com pequeno debounce). Os componentes de tela não tocam o storage diretamente — sempre passam por `useAppState()`. A lógica de derivação (o que conta como "concluído hoje", séries para gráficos, etc.) fica isolada em `state/logic.ts`, testada sem precisar renderizar componentes.
+Fluxo de dados: `AppState.tsx` carrega o `AppData` do storage uma vez, expõe ações (métodos) que mutam o estado React e persistem a cada mudança (com pequeno debounce). Os componentes de tela não tocam o storage diretamente — sempre passam por `useAppState()`. A lógica de derivação fica isolada em `state/logic.ts`/`workouts.ts`/`recommend.ts`, testada sem precisar renderizar componentes.
 
 ## Persistência / localStorage
 
 - Chave única: `performance:v1`.
-- Schema versionado (`SCHEMA_VERSION` em `src/data/schema.ts`). Uma versão incompatível ou JSON corrompido faz o app reiniciar com dados de demonstração — **não há migração de schema no momento** (ver Limitações).
-- Primeira execução sem nada salvo: o app é inicializado a partir de `src/data/seed.ts` (dados de demonstração, ancorados na semana real atual). A partir daí, toda edição do usuário é dado real.
+- Schema versionado (`SCHEMA_VERSION` em `src/data/schema.ts`, hoje v2). **Migração automática e versionada** (`src/data/migrations.ts`): dado salvo numa versão antiga é transformado para a atual tanto no load quanto no import de backup — o app nunca reseta para demonstração só porque o schema evoluiu. Só cai para seed se o JSON estiver corrompido ou for de uma versão mais nova do que este build entende.
+- Primeira execução sem nada salvo: o app é inicializado a partir de `src/data/seed.ts` (dados de demonstração, ancorados na semana real atual, com persona claramente fictícia). A partir daí, toda edição do usuário é dado real.
 - Em "Mais → Limpar dados" o usuário pode apagar tudo ou restaurar a demonstração, sempre com confirmação.
-- Export/Import: "Mais → Exportar/Importar backup" baixa/lê um `.json` com o `AppData` completo, validando `schemaVersion` no import.
+- Export/Import: "Mais → Exportar/Importar backup" baixa/lê um `.json` com o `AppData` completo — importar um backup de uma versão antiga também passa pela cadeia de migração.
 
-## Principais funcionalidades do MVP
+## Principais funcionalidades
 
-- **Hoje**: data real, WOD do box (texto livre + marcar concluído), blocos complementares planejados, checklist do dia (derivado de dados reais, não uma lista separada), registro de peso/passos/água.
+- **Hoje**: data real, resultado do WOD estruturado (formato, tempo/rounds+reps/carga, RX/scaled, RPE — ver Fase 2), "última vez" comparado ao nome do WOD, sugestão de complementar baseada em regras, checklist do dia, registro de peso/passos/água, recuperação rápida (RPE/energia/dor).
 - **Sessão complementar**: reps/carga/tempo/observação por série, pausar, avançar/voltar entre exercícios, saída segura (auto-salva em progresso, confirmação para abandonar), sessão em andamento sobrevive a refresh.
-- **Semana**: janela real de 7 dias (segunda a domingo), edição da programação por dia (tipo de dia, WOD, blocos complementares), status calculado a partir do que foi realmente concluído.
-- **Alimentação**: CRUD completo de refeições, anel de kcal e barra de proteína calculados a partir de refeições marcadas como feitas, registro de água.
-- **Evolução**: séries de peso, medidas corporais e "performance" (benchmarks) com sparkline e delta base→atual; progressões de habilidade (handstand, pull-up) com etapas navegáveis.
+- **Semana**: janela real de 7 dias, edição da programação por dia (tipo de dia, WOD com estrutura opcional de formato/movimentos, blocos complementares).
+- **Alimentação**: CRUD completo de refeições, anel de kcal e barra de proteína, registro de água.
+- **Evolução**: Resumo (peso/medidas/benchmarks com PR real, não só último valor), **Treinos** (histórico e recordes por exercício, derivados das sessões), **Benchmarks** (WODs nomeados — catálogo + criados pelo usuário — com histórico de tentativas e melhor resultado), **Medidas**, **Progressões** (extensíveis, com histórico de avanço/regressão).
 - **Mais**: perfil/metas editáveis, limitações (CRUD), histórico de sessões, sequência de dias ativos, export/import de backup, limpar dados.
+
+Detalhamento completo da Fase 2 (WOD estruturado, PRs, benchmarks, progressões, Hoje inteligente, cadeia de recomendação) em [`docs/ROADMAP.md`](./docs/ROADMAP.md), com status real (concluído/parcial/pendente) por item.
 
 ## Limitações conhecidas
 
 - **Uma sessão de treino ativa por vez** — iniciar outro bloco enquanto um está em andamento substitui a sessão anterior, sem aviso.
-- **Sem migração de schema** — só existe a versão 1 do formato; uma mudança futura de schema precisará de lógica própria de migração.
 - **Sem PWA/instalação como app** — roda como site; adicionar manifest/service worker fica para uma etapa futura.
-- **Passos são só manuais** — o campo existe e é editável, mas não há integração com sensor do celular.
-- **WOD do box é texto livre + booleano** — não há formato estruturado (AMRAP/EMOM/For Time), resultado (tempo/rounds+reps/carga por movimento) ou RX/scaled. Essa é a limitação mais relevante do produto hoje e é o foco da Fase 2 (ver `docs/ROADMAP.md`).
-- **Dados das sessões complementares não alimentam a Evolução** — reps/carga/tempo são registrados por série, mas hoje não viram gráfico de progresso nenhum.
-- **Progressões são fixas e não têm histórico de data** — só handstand e pull-up existem, não são extensíveis pelo usuário, e o avanço de etapa não registra quando aconteceu.
+- **Passos são só manuais** — sem integração com sensor do celular.
+- **Sem parsing automático de WOD em texto livre** — decisão deliberada (ver ROADMAP) para não inventar interpretação; estrutura/movimentos são preenchidos manualmente quando o usuário quer comparação ou sugestão de complementar.
+- **Critérios de avanço de progressão** existem no modelo de dados mas não têm formulário na UI ainda — avanço continua por julgamento do atleta/coach.
+- **A cadeia de recomendação não usa histórico de volume por área** — hoje cruza WOD do dia + limitação cadastrada, não frequência histórica de treino de uma fraqueza (ver ROADMAP).
 
 Contexto de continuidade para desenvolvimento (arquitetura, regras e roadmap detalhado) está em [`CLAUDE.md`](./CLAUDE.md) e [`docs/ROADMAP.md`](./docs/ROADMAP.md).
