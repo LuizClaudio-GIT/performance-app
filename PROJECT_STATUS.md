@@ -41,7 +41,7 @@ Documentando aqui em vez de perguntar, conforme autorizado — são todas revers
 
 Ver task list da sessão para o detalhamento passo a passo; resumo:
 
-- [ ] Camada de storage + schema + seed
+- [x] Camada de storage + schema + seed
 - [x] Utilitário de datas pt-BR
 - [x] Reescrever `AppState` sobre a camada persistida
 - [x] Hoje: registrar peso, água, checklist real, sessão com reps/carga/tempo/obs, persistência
