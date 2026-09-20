@@ -8,8 +8,23 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { getBlock, getProgressionDef } from '../data/catalog';
-import { makeId, type AppData, type DayPlan, type Limitation, type Meal, type MetricEntry, type SessionLog } from '../data/schema';
+import { getBlock } from '../data/catalog';
+import {
+  makeId,
+  type AppData,
+  type DayPlan,
+  type Limitation,
+  type Meal,
+  type MetricEntry,
+  type ProgressionDef,
+  type RecoveryLog,
+  type SessionLog,
+  type WodPlan,
+  type WodResult,
+  type WorkoutAttempt,
+  type WorkoutAttemptKind,
+  type WorkoutDef,
+} from '../data/schema';
 import { clearAppData, exportBackup, loadAppData, parseBackup, saveAppData } from '../storage/store';
 import { todayISO } from '../lib/date';
 import { buildSeedData } from '../data/seed';
@@ -20,9 +35,12 @@ import {
   getMealsForDate,
   getWaterForDate,
   isLastExercise,
+  isNewMetricPR,
   sessionHasProgress,
   type ChecklistItem,
 } from './logic';
+import { isNewWorkoutPR } from './workouts';
+import { recommendComplementary, recoveryNote, type ComplementaryRecommendation } from './recommend';
 import type { EvoTabId, TabId } from '../types';
 
 const REST_SECONDS = 45;
@@ -60,12 +78,37 @@ interface AppStateValue {
   // Day plans
   updateDayPlan: (date: string, patch: Partial<Omit<DayPlan, 'date'>>) => void;
 
-  // Metrics (measures / benchmarks)
-  addMetric: (entry: Omit<MetricEntry, 'id'>) => void;
+  // Metrics (measures / benchmarks) — returns whether the new entry is a PR
+  addMetric: (entry: Omit<MetricEntry, 'id'>) => boolean;
   deleteMetric: (id: string) => void;
 
-  // Progressions
-  setProgressionIndex: (id: string, index: number) => void;
+  // WOD / benchmarks (2.1, 2.4)
+  logWorkoutAttempt: (input: {
+    date?: string;
+    kind: WorkoutAttemptKind;
+    workoutDefId: string | null;
+    label: string;
+    plan: WodPlan;
+    result: WodResult;
+  }) => { attempt: WorkoutAttempt; isPR: boolean };
+  deleteWorkoutAttempt: (id: string) => void;
+  addWorkoutDef: (values: Omit<WorkoutDef, 'id' | 'source'>) => WorkoutDef;
+  updateWorkoutDef: (id: string, patch: Partial<Omit<WorkoutDef, 'id' | 'source'>>) => void;
+  deleteWorkoutDef: (id: string) => void;
+
+  // Progressions (2.5)
+  addProgressionDef: (values: { name: string; steps: string[] }) => void;
+  updateProgressionDef: (id: string, patch: { name?: string; steps?: string[]; criteria?: string[] }) => void;
+  deleteProgressionDef: (id: string) => void;
+  advanceProgression: (id: string, note: string) => void;
+  regressProgression: (id: string, note: string) => void;
+
+  // Recovery / RPE
+  logRecovery: (date: string, patch: Partial<Omit<RecoveryLog, 'date'>>) => void;
+
+  // Recommendation chain (2.6) — computed for today, rule-based
+  complementarySuggestion: ComplementaryRecommendation;
+  recoverySuggestionNote: string | null;
 
   // Limitations
   addLimitation: (values: Omit<Limitation, 'id'>) => void;
@@ -246,8 +289,10 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   );
 
   const addMetric = useCallback(
-    (entry: Omit<MetricEntry, 'id'>) => {
+    (entry: Omit<MetricEntry, 'id'>): boolean => {
+      const isPR = isNewMetricPR(dataRef.current, entry.category, entry.name, entry.value, entry.direction);
       update((d) => ({ ...d, metrics: [...d.metrics, { ...entry, id: makeId('metric') }] }));
+      return isPR;
     },
     [update],
   );
@@ -259,12 +304,153 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     [update],
   );
 
-  const setProgressionIndex = useCallback(
-    (id: string, index: number) => {
+  // --- WOD / benchmarks (2.1, 2.4) ---------------------------------------
+
+  const logWorkoutAttempt = useCallback(
+    (input: {
+      date?: string;
+      kind: WorkoutAttemptKind;
+      workoutDefId: string | null;
+      label: string;
+      plan: WodPlan;
+      result: WodResult;
+    }) => {
+      const attempt: WorkoutAttempt = {
+        id: makeId('wa'),
+        date: input.date ?? today,
+        kind: input.kind,
+        workoutDefId: input.workoutDefId,
+        label: input.label,
+        plan: input.plan,
+        result: input.result,
+      };
+      const isPR = isNewWorkoutPR(dataRef.current, attempt);
       update((d) => ({
         ...d,
-        progressions: d.progressions.map((p) => (p.id === id ? { ...p, currentIndex: index } : p)),
+        workoutAttempts: [...d.workoutAttempts, attempt],
+        boxWorkoutDone: input.kind === 'daily' ? { ...d.boxWorkoutDone, [attempt.date]: true } : d.boxWorkoutDone,
       }));
+      return { attempt, isPR };
+    },
+    [today, update],
+  );
+
+  const deleteWorkoutAttempt = useCallback(
+    (id: string) => {
+      update((d) => ({ ...d, workoutAttempts: d.workoutAttempts.filter((a) => a.id !== id) }));
+    },
+    [update],
+  );
+
+  const addWorkoutDef = useCallback((values: Omit<WorkoutDef, 'id' | 'source'>): WorkoutDef => {
+    const def: WorkoutDef = { ...values, id: makeId('wdef'), source: 'user' };
+    update((d) => ({ ...d, workoutDefs: [...d.workoutDefs, def] }));
+    return def;
+  }, [update]);
+
+  const updateWorkoutDef = useCallback(
+    (id: string, patch: Partial<Omit<WorkoutDef, 'id' | 'source'>>) => {
+      update((d) => ({ ...d, workoutDefs: d.workoutDefs.map((w) => (w.id === id ? { ...w, ...patch } : w)) }));
+    },
+    [update],
+  );
+
+  const deleteWorkoutDef = useCallback(
+    (id: string) => {
+      update((d) => ({
+        ...d,
+        workoutDefs: d.workoutDefs.filter((w) => w.id !== id),
+        workoutAttempts: d.workoutAttempts.map((a) => (a.workoutDefId === id ? { ...a, workoutDefId: null } : a)),
+      }));
+    },
+    [update],
+  );
+
+  // --- Progressions (2.5) -------------------------------------------------
+
+  const addProgressionDef = useCallback(
+    (values: { name: string; steps: string[] }) => {
+      const def: ProgressionDef = { id: makeId('pdef'), name: values.name, steps: values.steps, criteria: [], source: 'user' };
+      update((d) => ({
+        ...d,
+        progressionDefs: [...d.progressionDefs, def],
+        progressions: [...d.progressions, { id: def.id, currentIndex: 0, history: [] }],
+      }));
+    },
+    [update],
+  );
+
+  const updateProgressionDef = useCallback(
+    (id: string, patch: { name?: string; steps?: string[]; criteria?: string[] }) => {
+      update((d) => ({
+        ...d,
+        progressionDefs: d.progressionDefs.map((p) => (p.id === id ? { ...p, ...patch } : p)),
+        progressions: d.progressions.map((p) =>
+          p.id === id && patch.steps ? { ...p, currentIndex: Math.min(p.currentIndex, patch.steps.length - 1) } : p,
+        ),
+      }));
+    },
+    [update],
+  );
+
+  const deleteProgressionDef = useCallback(
+    (id: string) => {
+      update((d) => ({
+        ...d,
+        progressionDefs: d.progressionDefs.filter((p) => p.id !== id),
+        progressions: d.progressions.filter((p) => p.id !== id),
+      }));
+    },
+    [update],
+  );
+
+  const advanceProgression = useCallback(
+    (id: string, note: string) => {
+      update((d) => {
+        const def = d.progressionDefs.find((p) => p.id === id);
+        const state = d.progressions.find((p) => p.id === id);
+        if (!def || !state) return d;
+        const nextIndex = Math.min(state.currentIndex + 1, def.steps.length - 1);
+        if (nextIndex === state.currentIndex) return d;
+        const event = { id: makeId('pevt'), date: today, toIndex: nextIndex, direction: 'advance' as const, note };
+        return {
+          ...d,
+          progressions: d.progressions.map((p) =>
+            p.id === id ? { ...p, currentIndex: nextIndex, history: [...p.history, event] } : p,
+          ),
+        };
+      });
+    },
+    [today, update],
+  );
+
+  const regressProgression = useCallback(
+    (id: string, note: string) => {
+      update((d) => {
+        const state = d.progressions.find((p) => p.id === id);
+        if (!state) return d;
+        const nextIndex = Math.max(state.currentIndex - 1, 0);
+        if (nextIndex === state.currentIndex) return d;
+        const event = { id: makeId('pevt'), date: today, toIndex: nextIndex, direction: 'regress' as const, note };
+        return {
+          ...d,
+          progressions: d.progressions.map((p) =>
+            p.id === id ? { ...p, currentIndex: nextIndex, history: [...p.history, event] } : p,
+          ),
+        };
+      });
+    },
+    [today, update],
+  );
+
+  // --- Recovery / RPE -------------------------------------------------
+
+  const logRecovery = useCallback(
+    (date: string, patch: Partial<Omit<RecoveryLog, 'date'>>) => {
+      update((d) => {
+        const existing = d.recoveryLogs[date] ?? { date, rpe: null, energy: null, soreness: null, notes: '' };
+        return { ...d, recoveryLogs: { ...d.recoveryLogs, [date]: { ...existing, ...patch } } };
+      });
     },
     [update],
   );
@@ -467,7 +653,23 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       setData(fresh);
       saveAppData(fresh);
     } else {
-      const empty: AppData = { ...buildSeedData(), dayPlans: {}, boxWorkoutDone: {}, meals: [], water: {}, steps: {}, weightLog: [], metrics: [], sessions: [], activeSession: null };
+      const seed = buildSeedData();
+      const empty: AppData = {
+        ...seed,
+        dayPlans: {},
+        boxWorkoutDone: {},
+        meals: [],
+        water: {},
+        steps: {},
+        weightLog: [],
+        metrics: [],
+        sessions: [],
+        activeSession: null,
+        limitations: [],
+        workoutAttempts: [],
+        progressions: seed.progressionDefs.map((def) => ({ id: def.id, currentIndex: 0, history: [] })),
+        recoveryLogs: {},
+      };
       setData(empty);
       saveAppData(empty);
     }
@@ -478,6 +680,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     () => (data.activeSession ? sessionHasProgress(data.activeSession) : false),
     [data.activeSession],
   );
+  const complementarySuggestion = useMemo(() => recommendComplementary(data, today), [data, today]);
+  const recoverySuggestionNote = useMemo(() => recoveryNote(data, today), [data, today]);
 
   const value: AppStateValue = {
     today,
@@ -499,7 +703,19 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     updateDayPlan,
     addMetric,
     deleteMetric,
-    setProgressionIndex,
+    logWorkoutAttempt,
+    deleteWorkoutAttempt,
+    addWorkoutDef,
+    updateWorkoutDef,
+    deleteWorkoutDef,
+    addProgressionDef,
+    updateProgressionDef,
+    deleteProgressionDef,
+    advanceProgression,
+    regressProgression,
+    logRecovery,
+    complementarySuggestion,
+    recoverySuggestionNote,
     addLimitation,
     updateLimitation,
     deleteLimitation,
@@ -554,8 +770,4 @@ export function useTodayPlan() {
 
 export function useBlockCatalog(blockId: string) {
   return getBlock(blockId);
-}
-
-export function useProgressionDef(id: string) {
-  return getProgressionDef(id);
 }

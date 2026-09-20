@@ -1,4 +1,5 @@
 import type { ComplementaryBlock } from '../types';
+import type { ProgressionDef, WodFormat, WorkoutDef } from './schema';
 
 /**
  * Curated exercise library — content, not user data. Users log against this
@@ -135,16 +136,17 @@ export function getBlock(id: string): ComplementaryBlock | undefined {
   return BLOCKS.find((b) => b.id === id);
 }
 
-export interface ProgressionDef {
-  id: string;
-  name: string;
-  steps: string[];
-}
+// --- Progressions (2.5) — extensible: these are only the seeded defaults. ---
+// Real state lives in AppData.progressionDefs/progressions from here on;
+// this catalog is the one-time seed (first load + v1->v2 migration), not a
+// runtime source of truth. Steps reflect standard, widely-taught staging for
+// each skill — general coaching knowledge, not medical/physio claims.
 
-export const PROGRESSION_DEFS: ProgressionDef[] = [
+export const DEFAULT_PROGRESSION_DEFS: ProgressionDef[] = [
   {
     id: 'handstand',
     name: 'HANDSTAND',
+    source: 'catalog',
     steps: [
       'Mobilidade overhead',
       'Suporte de peso',
@@ -154,14 +156,202 @@ export const PROGRESSION_DEFS: ProgressionDef[] = [
       'Controle de handstand',
       'Handstand livre',
     ],
+    criteria: [],
+  },
+  {
+    id: 'handstand-walk',
+    name: 'HANDSTAND WALK',
+    source: 'catalog',
+    steps: [
+      'Handstand livre consistente (30s+)',
+      'Transferência de peso lateral na parede',
+      'Primeiros passos com apoio',
+      'Handstand walk 3m',
+      'Handstand walk 6m+ com mudança de direção',
+    ],
+    criteria: [],
   },
   {
     id: 'pullup',
     name: 'PULL-UP',
+    source: 'catalog',
     steps: ['Scapular pull', 'Hold ativo', 'Negativa 5s', 'Pull-up estrita', '8 reps estritas', 'Chest-to-bar'],
+    criteria: [],
+  },
+  {
+    id: 'chest-to-bar',
+    name: 'CHEST-TO-BAR',
+    source: 'catalog',
+    steps: ['Pull-up estrita consistente', 'Pull-up kipping', 'C2B kipping isolado', '5 C2B seguidos', 'C2B em série (WOD)'],
+    criteria: [],
+  },
+  {
+    id: 'toes-to-bar',
+    name: 'TOES-TO-BAR',
+    source: 'catalog',
+    steps: ['Hollow hold na barra', 'Knee raise controlado', 'Toes-to-bar estrito', 'Kipping toes-to-bar', 'T2B em série (WOD)'],
+    criteria: [],
+  },
+  {
+    id: 'double-unders',
+    name: 'DOUBLE UNDERS',
+    source: 'catalog',
+    steps: ['Single unders consistentes', 'Timing de salto/pulso', 'Double unders isolados (1-3)', '10 seguidos', 'Sem quebrar em WOD'],
+    criteria: [],
+  },
+  {
+    id: 'muscle-up',
+    name: 'MUSCLE-UP',
+    source: 'catalog',
+    steps: [
+      'Pull-up + dip estritos isolados',
+      'Transição na argola/barra baixa',
+      'Kipping muscle-up com banda',
+      'Muscle-up estrito ou kipping livre',
+      'Múltiplos em série (WOD)',
+    ],
+    criteria: [],
   },
 ];
 
-export function getProgressionDef(id: string): ProgressionDef | undefined {
-  return PROGRESSION_DEFS.find((p) => p.id === id);
+// --- Benchmark workouts (2.4) — publicly known CrossFit named WODs. -------
+// Structure only (format/movements/scheme) is seeded; results are never
+// fabricated — every attempt comes from what the user actually logs.
+
+function wm(name: string, reps: string, load = ''): { id: string; name: string; reps: string; load: string } {
+  return { id: `wm_${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`, name, reps, load };
 }
+
+export const BENCHMARK_WORKOUTS: WorkoutDef[] = [
+  {
+    id: 'bm_fran',
+    name: 'Fran',
+    isBenchmark: true,
+    source: 'catalog',
+    format: 'rounds-reps',
+    timeCapSec: null,
+    scheme: '21-15-9',
+    movements: [wm('Thruster', '21-15-9', '43/30kg'), wm('Pull-up', '21-15-9')],
+    notes: '',
+  },
+  {
+    id: 'bm_grace',
+    name: 'Grace',
+    isBenchmark: true,
+    source: 'catalog',
+    format: 'for-time',
+    timeCapSec: null,
+    scheme: '30 reps',
+    movements: [wm('Clean and jerk', '30', '61/43kg')],
+    notes: '',
+  },
+  {
+    id: 'bm_diane',
+    name: 'Diane',
+    isBenchmark: true,
+    source: 'catalog',
+    format: 'rounds-reps',
+    timeCapSec: null,
+    scheme: '21-15-9',
+    movements: [wm('Deadlift', '21-15-9', '102/70kg'), wm('Handstand push-up', '21-15-9')],
+    notes: '',
+  },
+  {
+    id: 'bm_murph',
+    name: 'Murph',
+    isBenchmark: true,
+    source: 'catalog',
+    format: 'chipper',
+    timeCapSec: null,
+    scheme: '1 mile run, 100 pull-ups, 200 push-ups, 300 squats, 1 mile run',
+    movements: [
+      wm('Run', '1 mile'),
+      wm('Pull-up', '100'),
+      wm('Push-up', '200'),
+      wm('Air squat', '300'),
+      wm('Run', '1 mile'),
+    ],
+    notes: 'Tradicionalmente com colete (20/14kg) quando RX.',
+  },
+  {
+    id: 'bm_helen',
+    name: 'Helen',
+    isBenchmark: true,
+    source: 'catalog',
+    format: 'for-time',
+    timeCapSec: null,
+    scheme: '3 rounds',
+    movements: [wm('Run', '400m'), wm('Kettlebell swing', '21', '24/16kg'), wm('Pull-up', '12')],
+    notes: '',
+  },
+  {
+    id: 'bm_cindy',
+    name: 'Cindy',
+    isBenchmark: true,
+    source: 'catalog',
+    format: 'amrap',
+    timeCapSec: 1200,
+    scheme: 'AMRAP 20min',
+    movements: [wm('Pull-up', '5'), wm('Push-up', '10'), wm('Air squat', '15')],
+    notes: '',
+  },
+  {
+    id: 'bm_annie',
+    name: 'Annie',
+    isBenchmark: true,
+    source: 'catalog',
+    format: 'rounds-reps',
+    timeCapSec: null,
+    scheme: '50-40-30-20-10',
+    movements: [wm('Double under', '50-40-30-20-10'), wm('Sit-up', '50-40-30-20-10')],
+    notes: '',
+  },
+  {
+    id: 'bm_karen',
+    name: 'Karen',
+    isBenchmark: true,
+    source: 'catalog',
+    format: 'for-time',
+    timeCapSec: null,
+    scheme: '150 reps',
+    movements: [wm('Wall ball', '150', '9/6kg')],
+    notes: '',
+  },
+];
+
+export function getWorkoutDefaults(): WorkoutDef[] {
+  return BENCHMARK_WORKOUTS.map((w) => ({ ...w, movements: w.movements.map((m) => ({ ...m })) }));
+}
+
+// --- WOD -> movement -> limitation-area keywords (recommendation chain) ---
+// Static, inspectable rule table: general CrossFit coaching knowledge about
+// which mobility/stability areas a movement typically stresses. Used only to
+// match against limitations the user actually entered — never invents a
+// limitation or a conclusion the data doesn't support.
+
+export const MOVEMENT_LIMITATION_KEYWORDS: Record<string, string[]> = {
+  'pull-up': ['suporte de peso invertido', 'ombro', 'compressão'],
+  'chest-to-bar': ['suporte de peso invertido', 'ombro'],
+  'toes-to-bar': ['compressão ativa', 'core'],
+  'toes to bar': ['compressão ativa', 'core'],
+  't2b': ['compressão ativa', 'core'],
+  'muscle-up': ['suporte de peso invertido', 'ombro', 'compressão'],
+  handstand: ['suporte de peso invertido', 'ombro overhead'],
+  hspu: ['suporte de peso invertido', 'ombro overhead'],
+  'handstand push-up': ['suporte de peso invertido', 'ombro overhead'],
+  'overhead squat': ['ombro overhead', 'dorsiflexão de tornozelo', 'quadril'],
+  thruster: ['ombro overhead', 'dorsiflexão de tornozelo'],
+  'push press': ['ombro overhead', 'extensão torácica'],
+  'push jerk': ['ombro overhead', 'extensão torácica'],
+  jerk: ['ombro overhead', 'extensão torácica'],
+  snatch: ['ombro overhead', 'quadril', 'dorsiflexão de tornozelo'],
+  'wall ball': ['dorsiflexão de tornozelo', 'quadril'],
+  'front squat': ['extensão torácica', 'dorsiflexão de tornozelo'],
+  'back squat': ['dorsiflexão de tornozelo', 'quadril'],
+  'air squat': ['dorsiflexão de tornozelo', 'quadril'],
+  'box jump': ['dorsiflexão de tornozelo', 'quadril'],
+  'double under': ['dorsiflexão de tornozelo'],
+  'double unders': ['dorsiflexão de tornozelo'],
+};
+
+export type { WodFormat };

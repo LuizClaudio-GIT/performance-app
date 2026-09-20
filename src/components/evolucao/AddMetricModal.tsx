@@ -1,21 +1,25 @@
 import { useState } from 'react';
 import { Modal } from '../common/Modal';
 import { todayISO } from '../../lib/date';
-import type { MetricCategory } from '../../data/schema';
+import type { MetricCategory, MetricDirection } from '../../data/schema';
 
 interface AddMetricModalProps {
   category: MetricCategory;
   defaultName?: string;
   defaultUnit?: string;
-  onSave: (values: { name: string; value: number; unit: string; date: string }) => void;
+  defaultDirection?: MetricDirection;
+  onSave: (values: { name: string; value: number; unit: string; date: string; direction: MetricDirection }) => void;
   onClose: () => void;
 }
 
-export function AddMetricModal({ category, defaultName = '', defaultUnit = '', onSave, onClose }: AddMetricModalProps) {
+const DIRECTION_LABEL: Record<MetricDirection, string> = { 'higher-better': 'MAIOR É MELHOR', 'lower-better': 'MENOR É MELHOR' };
+
+export function AddMetricModal({ category, defaultName = '', defaultUnit = '', defaultDirection = 'higher-better', onSave, onClose }: AddMetricModalProps) {
   const [name, setName] = useState(defaultName);
   const [value, setValue] = useState('');
   const [unit, setUnit] = useState(defaultUnit);
   const [date, setDate] = useState(todayISO());
+  const [direction, setDirection] = useState<MetricDirection>(defaultDirection);
   const [error, setError] = useState('');
 
   function handleSave() {
@@ -28,7 +32,7 @@ export function AddMetricModal({ category, defaultName = '', defaultUnit = '', o
       setError('Valor inválido.');
       return;
     }
-    onSave({ name: name.trim(), value: n, unit: unit.trim() || '—', date });
+    onSave({ name: name.trim(), value: n, unit: unit.trim() || '—', date, direction });
     onClose();
   }
 
@@ -59,6 +63,16 @@ export function AddMetricModal({ category, defaultName = '', defaultUnit = '', o
           DATA
         </label>
         <input id="metric-date" className="pf-input" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+      </div>
+      <div className="pf-field">
+        <label className="pf-field-label">O QUE CONTA COMO EVOLUÇÃO?</label>
+        <div className="pf-segmented">
+          {(['higher-better', 'lower-better'] as MetricDirection[]).map((d) => (
+            <button key={d} type="button" className="pf-pill" data-active={direction === d} onClick={() => setDirection(d)}>
+              {DIRECTION_LABEL[d]}
+            </button>
+          ))}
+        </div>
       </div>
       {error && <div style={{ color: '#ff8b7c', fontSize: 12.5 }}>{error}</div>}
       <div className="pf-modal-actions">

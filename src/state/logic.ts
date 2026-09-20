@@ -6,7 +6,9 @@ import type {
   DayPlan,
   ExerciseLog,
   Meal,
+  MetricDirection,
   MetricEntry,
+  ProgressionDef,
   SessionLog,
   SetLog,
 } from '../data/schema';
@@ -18,6 +20,7 @@ export function defaultDayPlan(date: string): DayPlan {
     boxLabel: 'CrossFit',
     boxWorkoutTitle: '',
     boxWorkoutBody: '',
+    wodPlan: null,
     complementaryBlockIds: [],
     note: '',
   };
@@ -136,13 +139,24 @@ export function weeklyComplementaryVolume(data: AppData, dates: string[]): { don
   return { done, planned, pct: planned > 0 ? Math.round((done / planned) * 100) : 0 };
 }
 
+// --- Metrics / PR (2.3) --------------------------------------------------
+
 export interface MetricSeries {
   name: string;
   unit: string;
+  direction: MetricDirection;
   base: MetricEntry;
   latest: MetricEntry;
-  delta: number;
+  /** True historical best, respecting direction — NOT just the latest value. */
+  best: MetricEntry;
+  delta: number; // latest - base, kept for the existing sparkline "since you started" framing
   points: number[]; // normalized 0..1 for sparkline, chronological
+  /** Every entry, chronological, each flagged with whether it was a new record at the time. */
+  history: Array<MetricEntry & { isPR: boolean }>;
+}
+
+function isBetterValue(direction: MetricDirection, a: number, b: number): boolean {
+  return direction === 'higher-better' ? a > b : a < b;
 }
 
 export function metricSeriesByName(data: AppData, category: MetricEntry['category']): MetricSeries[] {
@@ -157,22 +171,43 @@ export function metricSeriesByName(data: AppData, category: MetricEntry['categor
   for (const [name, entriesUnsorted] of byName) {
     const entries = [...entriesUnsorted].sort((a, b) => a.date.localeCompare(b.date));
     if (entries.length === 0) continue;
+    const direction = entries[entries.length - 1].direction;
     const base = entries[0];
     const latest = entries[entries.length - 1];
     const values = entries.map((e) => e.value);
     const min = Math.min(...values);
     const max = Math.max(...values);
     const range = max - min || 1;
+
+    let best = entries[0];
+    const history: Array<MetricEntry & { isPR: boolean }> = [];
+    for (const e of entries) {
+      const isPR = e.id === entries[0].id || isBetterValue(direction, e.value, best.value);
+      if (isPR) best = e;
+      history.push({ ...e, isPR });
+    }
+
     out.push({
       name,
       unit: latest.unit,
+      direction,
       base,
       latest,
+      best,
       delta: latest.value - base.value,
       points: values.map((v) => (v - min) / range),
+      history,
     });
   }
   return out;
+}
+
+/** Whether `value` would be a new PR for `name`/`category`, given what's already logged (excludes nothing — call before adding the new entry). */
+export function isNewMetricPR(data: AppData, category: MetricEntry['category'], name: string, value: number, direction: MetricDirection): boolean {
+  const existing = data.metrics.filter((m) => m.category === category && m.name === name);
+  if (existing.length === 0) return true;
+  const best = existing.reduce((b, e) => (isBetterValue(direction, e.value, b.value) ? e : b));
+  return isBetterValue(direction, value, best.value);
 }
 
 export function weightSeries(data: AppData) {
@@ -250,6 +285,119 @@ export function computeStreakDays(data: AppData): number {
     cursor = addDays(cursor, -1);
   }
   return count;
+}
+
+// --- Evolução baseada nos treinos (2.2) -----------------------------------
+// SetLogs from completed/abandoned sessions turned into real series. Every
+// function here skips (never fabricates) a data point it can't parse.
+
+function parseLeadingNumber(text: string): number | null {
+  if (!text) return null;
+  const normalized = text.replace(',', '.');
+  const match = normalized.match(/-?\d+(\.\d+)?/);
+  if (!match) return null;
+  const n = Number(match[0]);
+  return Number.isFinite(n) ? n : null;
+}
+
+export interface ExerciseHistoryEntry {
+  date: string;
+  sessionId: string;
+  blockId: string;
+  sets: SetLog[];
+}
+
+export function exerciseNamesInHistory(data: AppData): string[] {
+  const names = new Set<string>();
+  for (const s of data.sessions) {
+    if (s.status === 'in-progress') continue;
+    for (const ex of s.exercises) names.add(ex.name);
+  }
+  return [...names].sort((a, b) => a.localeCompare(b));
+}
+
+export function exerciseHistory(data: AppData, exerciseName: string): ExerciseHistoryEntry[] {
+  const out: ExerciseHistoryEntry[] = [];
+  for (const s of data.sessions) {
+    if (s.status === 'in-progress') continue;
+    for (const ex of s.exercises) {
+      if (ex.name !== exerciseName) continue;
+      out.push({ date: s.date, sessionId: s.id, blockId: s.blockId, sets: ex.sets });
+    }
+  }
+  return out.sort((a, b) => a.date.localeCompare(b.date));
+}
+
+export interface ExercisePoint {
+  date: string;
+  value: number;
+}
+
+/** Highest parseable load logged per session. Sessions with no parseable load are skipped, not zeroed. */
+export function exerciseBestLoadSeries(data: AppData, exerciseName: string): ExercisePoint[] {
+  const out: ExercisePoint[] = [];
+  for (const entry of exerciseHistory(data, exerciseName)) {
+    const loads = entry.sets.map((s) => parseLeadingNumber(s.load)).filter((n): n is number => n != null);
+    if (loads.length === 0) continue;
+    out.push({ date: entry.date, value: Math.max(...loads) });
+  }
+  return out;
+}
+
+export function exerciseTotalRepsSeries(data: AppData, exerciseName: string): ExercisePoint[] {
+  const out: ExercisePoint[] = [];
+  for (const entry of exerciseHistory(data, exerciseName)) {
+    const reps = entry.sets.map((s) => parseLeadingNumber(s.reps)).filter((n): n is number => n != null);
+    if (reps.length === 0) continue;
+    out.push({ date: entry.date, value: reps.reduce((a, b) => a + b, 0) });
+  }
+  return out;
+}
+
+/** reps x load per set, summed per session — only counts sets where BOTH are numeric; never assumes a missing dimension. */
+export function exerciseVolumeSeries(data: AppData, exerciseName: string): ExercisePoint[] {
+  const out: ExercisePoint[] = [];
+  for (const entry of exerciseHistory(data, exerciseName)) {
+    let volume = 0;
+    let any = false;
+    for (const s of entry.sets) {
+      const reps = parseLeadingNumber(s.reps);
+      const load = parseLeadingNumber(s.load);
+      if (reps == null || load == null) continue;
+      volume += reps * load;
+      any = true;
+    }
+    if (any) out.push({ date: entry.date, value: volume });
+  }
+  return out;
+}
+
+export function exerciseDurationSeries(data: AppData, exerciseName: string): ExercisePoint[] {
+  const out: ExercisePoint[] = [];
+  for (const entry of exerciseHistory(data, exerciseName)) {
+    const durations = entry.sets.map((s) => s.durationSec).filter((n): n is number => n != null);
+    if (durations.length === 0) continue;
+    out.push({ date: entry.date, value: Math.max(...durations) });
+  }
+  return out;
+}
+
+export function bestPoint(points: ExercisePoint[]): ExercisePoint | null {
+  if (points.length === 0) return null;
+  return points.reduce((best, p) => (p.value > best.value ? p : best));
+}
+
+export function blockSessionDates(data: AppData, blockId: string): string[] {
+  return data.sessions
+    .filter((s) => s.blockId === blockId && s.status === 'completed')
+    .map((s) => s.date)
+    .sort();
+}
+
+// --- Progressions (2.5) ---------------------------------------------------
+
+export function findProgressionDef(data: AppData, id: string): ProgressionDef | undefined {
+  return data.progressionDefs.find((p) => p.id === id);
 }
 
 export { isPastDate };

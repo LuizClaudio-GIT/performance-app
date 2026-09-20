@@ -1,5 +1,6 @@
 import { buildSeedData } from '../data/seed';
-import { isAppData, SCHEMA_VERSION, type AppData } from '../data/schema';
+import { migrate } from '../data/migrations';
+import { isAppData, looksLikeMigratableAppData, SCHEMA_VERSION, type AppData } from '../data/schema';
 
 const STORAGE_KEY = 'performance:v1';
 
@@ -27,19 +28,37 @@ export interface LoadResult {
 }
 
 /**
- * Loads persisted app data. Falls back to freshly-generated demo data (seeded
- * to the real current week) when nothing is stored yet, the stored JSON is
- * corrupt, or its schemaVersion doesn't match what this build expects — the
- * MVP has a single schema version, so a mismatch just means "start fresh"
- * rather than attempting a migration.
+ * Migrates a parsed-but-possibly-old blob to the current schema, if
+ * possible. Returns null when it can't be trusted (corrupt shape, or a
+ * schema version newer than this build knows how to read) — the caller
+ * falls back to seed only in that case, never just because the version
+ * differs from current.
+ */
+function tryMigrate(parsed: unknown): AppData | null {
+  if (!looksLikeMigratableAppData(parsed)) return null;
+  const migrated = migrate(parsed);
+  if (isAppData(migrated) && migrated.schemaVersion === SCHEMA_VERSION) {
+    return migrated;
+  }
+  return null;
+}
+
+/**
+ * Loads persisted app data. Runs it through the migration chain when it's an
+ * older-but-recognizable schema — real athlete history is never discarded
+ * just because the schema evolved. Falls back to freshly-generated demo data
+ * (seeded to the real current week) only when nothing is stored yet, the
+ * stored JSON is corrupt, or its schema is newer than this build supports.
  */
 export function loadAppData(): LoadResult {
   const raw = readRaw();
   if (raw) {
     try {
       const parsed: unknown = JSON.parse(raw);
-      if (isAppData(parsed) && parsed.schemaVersion === SCHEMA_VERSION) {
-        return { data: parsed, seeded: false };
+      const migrated = tryMigrate(parsed);
+      if (migrated) {
+        if (migrated !== parsed) writeRaw(JSON.stringify(migrated));
+        return { data: migrated, seeded: false };
       }
     } catch {
       // fall through to seed
@@ -79,11 +98,13 @@ export function parseBackup(json: string): ImportResult {
   } catch {
     return { ok: false, error: 'Arquivo inválido: não é um JSON válido.' };
   }
-  if (!isAppData(parsed)) {
+  if (!looksLikeMigratableAppData(parsed)) {
     return { ok: false, error: 'Arquivo inválido: estrutura de dados não reconhecida.' };
   }
-  if (parsed.schemaVersion !== SCHEMA_VERSION) {
-    return { ok: false, error: `Versão incompatível (esperado v${SCHEMA_VERSION}, arquivo é v${parsed.schemaVersion}).` };
+  const migrated = tryMigrate(parsed);
+  if (!migrated) {
+    const version = (parsed as { schemaVersion?: unknown }).schemaVersion;
+    return { ok: false, error: `Versão incompatível (esperado até v${SCHEMA_VERSION}, arquivo é v${String(version)}).` };
   }
-  return { ok: true, data: parsed };
+  return { ok: true, data: migrated };
 }

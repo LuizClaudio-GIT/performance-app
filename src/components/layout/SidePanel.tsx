@@ -1,8 +1,8 @@
-import { getBlock, getProgressionDef } from '../../data/catalog';
+import { getBlock } from '../../data/catalog';
 import { weekDates, weekdayShort } from '../../lib/date';
 import { useAppState } from '../../state/AppState';
 import { StepTimeline } from '../common/StepTimeline';
-import { nextIncompleteBlockId, weekDayStatus } from '../../state/logic';
+import { findProgressionDef, nextIncompleteBlockId, weekDayStatus } from '../../state/logic';
 
 export function SidePanel() {
   const { data, today, startSession } = useAppState();
@@ -11,7 +11,7 @@ export function SidePanel() {
   const nextBlock = nextBlockId ? getBlock(nextBlockId) : null;
 
   const progression = data.progressions[0];
-  const progressionDef = progression ? getProgressionDef(progression.id) : null;
+  const progressionDef = progression ? findProgressionDef(data, progression.id) : null;
 
   const week = weekDates(today);
 
