@@ -149,6 +149,11 @@
   background: transparent;
 }
 
+button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
 .pf-segmented {
   display: flex;
   gap: 6px;

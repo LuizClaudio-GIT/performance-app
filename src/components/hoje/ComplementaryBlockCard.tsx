@@ -2,9 +2,14 @@ import type { ComplementaryBlock } from '../../types';
 import { useAppState } from '../../state/AppState';
 
 export function ComplementaryBlockCard({ block }: { block: ComplementaryBlock }) {
-  const { blockDone, startSession, nextBlockId } = useAppState();
-  const done = blockDone[block.id];
-  const hero = !done && nextBlockId === block.id;
+  const { data, today, startSession } = useAppState();
+  const done = data.sessions.some((s) => s.blockId === block.id && s.date === today && s.status === 'completed');
+  const plan = data.dayPlans[today];
+  const nextPendingId = plan?.complementaryBlockIds.find(
+    (id) => !data.sessions.some((s) => s.blockId === id && s.date === today && s.status === 'completed'),
+  );
+  const hero = !done && nextPendingId === block.id;
+  const inProgress = data.activeSession?.blockId === block.id;
 
   return (
     <div
@@ -56,7 +61,7 @@ export function ComplementaryBlockCard({ block }: { block: ComplementaryBlock })
           disabled={done}
           onClick={() => !done && startSession(block.id)}
         >
-          {done ? 'CONCLUÍDO' : 'INICIAR'}
+          {done ? 'CONCLUÍDO' : inProgress ? 'CONTINUAR' : 'INICIAR'}
         </button>
       </div>
     </div>

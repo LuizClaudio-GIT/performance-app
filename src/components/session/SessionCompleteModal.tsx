@@ -1,7 +1,7 @@
 import { useAppState } from '../../state/AppState';
 
 export function SessionCompleteModal() {
-  const { showDone, closeDone } = useAppState();
+  const { showDone, lastCompletedBlockName, closeDone } = useAppState();
   if (!showDone) return null;
 
   return (
@@ -9,7 +9,9 @@ export function SessionCompleteModal() {
       <div className="pf-done-card">
         <div className="pf-done-check">✓</div>
         <div className="pf-done-title">SESSÃO CONCLUÍDA</div>
-        <div className="pf-done-note">Trabalho complementar registrado no seu histórico.</div>
+        <div className="pf-done-note">
+          {lastCompletedBlockName ? `${lastCompletedBlockName} registrado no seu histórico.` : 'Trabalho complementar registrado no seu histórico.'}
+        </div>
         <button className="pf-done-btn" onClick={closeDone}>
           VOLTAR PARA HOJE
         </button>

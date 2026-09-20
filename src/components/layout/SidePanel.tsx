@@ -1,10 +1,19 @@
-import { BLOCKS, HANDSTAND_CURRENT, HANDSTAND_STEPS, WEEK_DOT_CURRENT_INDEX, WEEK_DOT_LABELS } from '../../data/mockData';
+import { getBlock, getProgressionDef } from '../../data/catalog';
+import { weekDates, weekdayShort } from '../../lib/date';
 import { useAppState } from '../../state/AppState';
 import { StepTimeline } from '../common/StepTimeline';
+import { nextIncompleteBlockId, weekDayStatus } from '../../state/logic';
 
 export function SidePanel() {
-  const { nextBlockId, startSession } = useAppState();
-  const nextBlock = nextBlockId ? BLOCKS.find((b) => b.id === nextBlockId) ?? null : null;
+  const { data, today, startSession } = useAppState();
+  const plan = data.dayPlans[today];
+  const nextBlockId = plan ? nextIncompleteBlockId(data, today, plan.complementaryBlockIds) : null;
+  const nextBlock = nextBlockId ? getBlock(nextBlockId) : null;
+
+  const progression = data.progressions[0];
+  const progressionDef = progression ? getProgressionDef(progression.id) : null;
+
+  const week = weekDates(today);
 
   return (
     <aside className="pf-side-panel">
@@ -27,38 +36,52 @@ export function SidePanel() {
             <div style={{ fontFamily: 'var(--pf-font-mono)', fontSize: 9.5, color: 'var(--pf-text-secondary)', marginTop: 6 }}>
               {nextBlock.meta}
             </div>
-            <button className="pf-btn-primary" style={{ marginTop: 13, width: '100%', padding: 11, fontSize: 16 }} onClick={() => startSession(nextBlock.id)}>
+            <button
+              className="pf-btn-primary"
+              style={{ marginTop: 13, width: '100%', padding: 11, fontSize: 16 }}
+              onClick={() => startSession(nextBlock.id)}
+            >
               INICIAR SESSÃO
             </button>
           </div>
         </>
       )}
 
-      <div className="pf-section-label" style={{ margin: '20px 0 10px' }}>
-        PROGRESSÃO — HANDSTAND
-      </div>
-      <div className="pf-card" style={{ padding: '14px 15px' }}>
-        <StepTimeline steps={HANDSTAND_STEPS} current={HANDSTAND_CURRENT} />
-      </div>
+      {progression && progressionDef && (
+        <>
+          <div className="pf-section-label" style={{ margin: '20px 0 10px' }}>
+            PROGRESSÃO — {progressionDef.name}
+          </div>
+          <div className="pf-card" style={{ padding: '14px 15px' }}>
+            <StepTimeline steps={progressionDef.steps} current={progression.currentIndex} />
+          </div>
+        </>
+      )}
 
       <div className="pf-section-label" style={{ margin: '20px 0 10px' }}>
         PROGRESSO DA SEMANA
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        {WEEK_DOT_LABELS.map((day, i) => (
-          <div key={day} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 7 }}>
-            <div
-              style={{
-                width: 26,
-                height: 26,
-                borderRadius: '50%',
-                background: i === WEEK_DOT_CURRENT_INDEX ? 'var(--pf-accent)' : 'transparent',
-                border: `1.5px solid ${i === WEEK_DOT_CURRENT_INDEX ? 'var(--pf-accent)' : '#3A3F45'}`,
-              }}
-            />
-            <div style={{ fontFamily: 'var(--pf-font-mono)', fontSize: 8.5, color: 'var(--pf-text-secondary)' }}>{day}</div>
-          </div>
-        ))}
+        {week.map((date) => {
+          const status = weekDayStatus(data, date);
+          const active = status === 'CONCLUÍDO' || status === 'HOJE';
+          return (
+            <div key={date} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 7 }}>
+              <div
+                style={{
+                  width: 26,
+                  height: 26,
+                  borderRadius: '50%',
+                  background: active ? 'var(--pf-accent)' : 'transparent',
+                  border: `1.5px solid ${active ? 'var(--pf-accent)' : '#3A3F45'}`,
+                }}
+              />
+              <div style={{ fontFamily: 'var(--pf-font-mono)', fontSize: 8.5, color: 'var(--pf-text-secondary)' }}>
+                {weekdayShort(date)}
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       <div style={{ marginTop: 24, fontFamily: 'var(--pf-font-mono)', fontSize: 10, letterSpacing: '.2em', lineHeight: 1.9, color: 'var(--pf-text-secondary)' }}>

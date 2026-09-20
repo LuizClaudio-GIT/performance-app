@@ -1,40 +1,46 @@
-import { CHECKLIST } from '../../data/mockData';
 import { useAppState } from '../../state/AppState';
 
 export function ChecklistCard() {
-  const { checks, toggleCheck, checkDoneCount } = useAppState();
+  const { checklist } = useAppState();
+  const doneCount = checklist.filter((c) => c.done).length;
 
   return (
     <>
       <div className="pf-section-head">
         <div className="pf-section-label">CHECKLIST DO DIA</div>
-        <div className="pf-section-count">{checkDoneCount}/6</div>
+        <div className="pf-section-count">
+          {doneCount}/{checklist.length}
+        </div>
       </div>
-      <div className="pf-card" style={{ overflow: 'hidden' }}>
-        {CHECKLIST.map((item) => {
-          const on = checks[item.id];
-          return (
-            <button className="pf-checklist-row" key={item.id} onClick={() => toggleCheck(item.id)}>
+      {checklist.length === 0 ? (
+        <div className="pf-empty-state">Dia de descanso — nada para marcar hoje.</div>
+      ) : (
+        <div className="pf-card" style={{ overflow: 'hidden' }}>
+          {checklist.map((item) => (
+            <div className="pf-checklist-row" key={item.id} style={{ cursor: 'default' }}>
               <div
                 className="pf-checklist-dot"
                 style={{
-                  border: `1.5px solid ${on ? 'var(--pf-accent)' : '#3A3F45'}`,
-                  background: on ? 'var(--pf-accent)' : 'transparent',
+                  border: `1.5px solid ${item.done ? 'var(--pf-accent)' : '#3A3F45'}`,
+                  background: item.done ? 'var(--pf-accent)' : 'transparent',
                 }}
               />
               <div
                 className="pf-checklist-label"
                 style={{
-                  color: on ? 'var(--pf-text-secondary)' : 'var(--pf-text)',
-                  textDecoration: on ? 'line-through' : 'none',
+                  color: item.done ? 'var(--pf-text-secondary)' : 'var(--pf-text)',
+                  textDecoration: item.done ? 'line-through' : 'none',
                 }}
               >
                 {item.label}
               </div>
               <div className="pf-checklist-value">{item.value}</div>
-            </button>
-          );
-        })}
+            </div>
+          ))}
+        </div>
+      )}
+      <div style={{ fontFamily: 'var(--pf-font-mono)', fontSize: 9.5, color: 'var(--pf-text-faint)', marginTop: 8, lineHeight: 1.5 }}>
+        Este checklist é calculado a partir do que você realmente registrou — treino do box, blocos complementares, água, alimentação e peso.
       </div>
     </>
   );
