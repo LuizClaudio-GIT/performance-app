@@ -1,0 +1,36 @@
+:root {
+  --pf-bg: #07090a;
+  --pf-bg-panel: #0b0d0f;
+  --pf-bg-raised: #0d1012;
+  --pf-surface: #15181c;
+  --pf-surface-muted: #101316;
+  --pf-border: #292d32;
+  --pf-border-soft: #23272b;
+  --pf-accent: #c6ff00;
+  --pf-accent-soft: rgba(198, 255, 0, 0.08);
+  --pf-accent-border: rgba(198, 255, 0, 0.35);
+  --pf-text: #f4f4f2;
+  --pf-text-secondary: #8c929a;
+  --pf-text-faint: #5e656d;
+  --pf-text-dim: #6c737b;
+  --pf-warn-bg: #17150f;
+  --pf-warn-border: #3a2f1a;
+  --pf-warn-text: #c9a227;
+  --pf-warn-text-soft: #c7c3b6;
+  --pf-on-accent: #0b0d0f;
+
+  --pf-font-display: 'Barlow Condensed', sans-serif;
+  --pf-font-body: 'Inter', system-ui, sans-serif;
+  --pf-font-mono: 'JetBrains Mono', monospace;
+
+  --pf-radius-sm: 4px;
+  --pf-radius-md: 10px;
+  --pf-radius-lg: 14px;
+  --pf-radius-pill: 999px;
+
+  /* Below this viewport width the app renders as a single-column phone layout
+     (matches a Galaxy Z Fold's ~344-412px closed cover screen and ordinary phones).
+     At/above it, the two-column fold-open/desktop layout takes over
+     (a Fold's ~673-717px open main screen, tablets, and desktop). */
+  --pf-breakpoint-wide: 640px;
+}

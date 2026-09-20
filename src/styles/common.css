@@ -1,0 +1,276 @@
+.pf-page {
+  padding: 0 18px 120px;
+  animation: pf-fade-in 0.25s ease;
+}
+
+.pf-page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin: 18px 0 6px;
+  gap: 12px;
+}
+
+.pf-page-title {
+  font-family: var(--pf-font-display);
+  font-weight: 700;
+  font-size: 48px;
+  line-height: 0.95;
+}
+
+.pf-page-eyebrow {
+  font-family: var(--pf-font-mono);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  color: var(--pf-text-secondary);
+  text-align: right;
+  line-height: 1.7;
+  white-space: pre-line;
+}
+
+.pf-underline {
+  width: 46px;
+  height: 3px;
+  background: var(--pf-accent);
+  margin: 10px 0 18px;
+}
+
+.pf-card {
+  border: 1px solid var(--pf-border);
+  border-radius: 14px;
+  background: var(--pf-surface);
+}
+
+.pf-card-pad {
+  padding: 14px 15px;
+}
+
+.pf-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 22px 2px 9px;
+}
+
+.pf-section-label {
+  font-family: var(--pf-font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.2em;
+  color: var(--pf-text-secondary);
+}
+
+.pf-section-label--accent {
+  color: var(--pf-accent);
+}
+
+.pf-section-count {
+  font-family: var(--pf-font-mono);
+  font-size: 9px;
+  color: var(--pf-text-faint);
+}
+
+.pf-tag {
+  font-family: var(--pf-font-mono);
+  font-size: 8.5px;
+  letter-spacing: 0.1em;
+  color: var(--pf-text-secondary);
+  border: 1px solid var(--pf-border);
+  padding: 4px 7px;
+  border-radius: 4px;
+}
+
+.pf-tag--accent {
+  color: var(--pf-accent);
+  border-color: var(--pf-accent-border);
+  background: var(--pf-accent-soft);
+  font-size: 9px;
+}
+
+.pf-badge {
+  font-family: var(--pf-font-mono);
+  font-size: 8.5px;
+  letter-spacing: 0.12em;
+  color: var(--pf-accent);
+  border: 1px solid var(--pf-accent-border);
+  padding: 5px 8px;
+  border-radius: 5px;
+  white-space: nowrap;
+}
+
+.pf-progress-track {
+  height: 6px;
+  background: var(--pf-border-soft);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.pf-progress-track--thin {
+  height: 3px;
+  border-radius: 2px;
+}
+
+.pf-progress-track--thinner {
+  height: 4px;
+}
+
+.pf-progress-fill {
+  height: 100%;
+  background: var(--pf-accent);
+  transition: width 0.3s ease;
+}
+
+.pf-btn-primary {
+  border: none;
+  border-radius: 9px;
+  background: var(--pf-accent);
+  color: var(--pf-on-accent);
+  font-family: var(--pf-font-display);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+}
+
+.pf-btn-outline {
+  border: 1px solid var(--pf-text);
+  border-radius: 9px;
+  background: transparent;
+  color: var(--pf-text);
+  font-family: var(--pf-font-display);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+}
+
+.pf-btn-outline:disabled,
+.pf-btn-done {
+  border: 1px solid var(--pf-border);
+  color: var(--pf-text-secondary);
+  cursor: default;
+  background: transparent;
+}
+
+.pf-segmented {
+  display: flex;
+  gap: 6px;
+  padding: 4px;
+  border: 1px solid var(--pf-border);
+  border-radius: 999px;
+  background: var(--pf-surface);
+}
+
+.pf-pill {
+  padding: 7px 13px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-family: var(--pf-font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  background: transparent;
+  color: var(--pf-text-secondary);
+  flex: 1;
+}
+
+.pf-pill[data-active='true'] {
+  background: var(--pf-accent);
+  color: var(--pf-on-accent);
+}
+
+.pf-placeholder {
+  position: relative;
+  background-image: repeating-linear-gradient(115deg, #191d20 0 7px, #131719 7px 14px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.pf-placeholder-label {
+  font-family: var(--pf-font-mono);
+  font-size: 7px;
+  color: var(--pf-text-dim);
+  letter-spacing: 0.06em;
+  padding-bottom: 4px;
+}
+
+.pf-banner {
+  margin-top: 16px;
+  border: 1px solid var(--pf-border);
+  border-radius: 14px;
+  overflow: hidden;
+  position: relative;
+  min-height: 84px;
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+}
+
+.pf-banner-stripes {
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(115deg, #131618 0 8px, #0d1012 8px 16px);
+}
+
+.pf-banner-fade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #0b0d0f 20%, rgba(11, 13, 15, 0.35));
+}
+
+.pf-banner-text {
+  position: relative;
+  font-family: var(--pf-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  line-height: 1.9;
+  color: var(--pf-text);
+}
+
+.pf-quote-banner {
+  margin-top: 20px;
+  font-family: var(--pf-font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.2em;
+  line-height: 1.9;
+  color: var(--pf-text-secondary);
+}
+
+.pf-step-row {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+}
+
+.pf-step-rail {
+  width: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: none;
+}
+
+.pf-step-dot {
+  border-radius: 50%;
+  margin-top: 6px;
+  flex: none;
+}
+
+.pf-step-line {
+  flex: 1;
+  width: 1.5px;
+  background: #2b3036;
+}
+
+.pf-step-text {
+  padding: 3px 0 12px;
+  font-size: 12.5px;
+  color: var(--pf-text-dim);
+}
+
+.pf-step-tag {
+  font-family: var(--pf-font-mono);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  color: var(--pf-text-faint);
+  white-space: pre;
+}

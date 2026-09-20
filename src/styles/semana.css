@@ -1,0 +1,108 @@
+.pf-volume-card {
+  border: 1px solid var(--pf-border);
+  border-radius: 14px;
+  background: var(--pf-surface);
+  padding: 14px 15px;
+  margin-bottom: 16px;
+}
+
+.pf-volume-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.pf-volume-value {
+  font-family: var(--pf-font-display);
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--pf-accent);
+}
+
+.pf-volume-foot {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--pf-font-mono);
+  font-size: 8.5px;
+  color: var(--pf-text-faint);
+  margin-top: 8px;
+}
+
+.pf-week-list {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.pf-week-row {
+  display: flex;
+  align-items: stretch;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.pf-week-day {
+  width: 62px;
+  flex: none;
+  padding: 12px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid var(--pf-border);
+}
+
+.pf-week-day-num {
+  font-family: var(--pf-font-display);
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.pf-week-day-date {
+  font-family: var(--pf-font-mono);
+  font-size: 8.5px;
+  color: var(--pf-text-secondary);
+  margin-top: 3px;
+}
+
+.pf-week-body {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 14px;
+}
+
+.pf-week-box {
+  font-family: var(--pf-font-mono);
+  font-size: 8.5px;
+  letter-spacing: 0.14em;
+  color: var(--pf-text-faint);
+}
+
+.pf-week-work {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.pf-week-work-tag {
+  font-family: var(--pf-font-mono);
+  font-size: 8.5px;
+  letter-spacing: 0.08em;
+  padding: 5px 8px;
+  border-radius: 5px;
+}
+
+.pf-week-state {
+  width: 74px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--pf-font-mono);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  text-align: center;
+  border-left: 1px solid var(--pf-border);
+}

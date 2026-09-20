@@ -1,0 +1,141 @@
+.pf-profile-card {
+  border: 1px solid var(--pf-border);
+  border-radius: 14px;
+  background: var(--pf-surface);
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.pf-profile-photo {
+  width: 54px;
+  height: 54px;
+  border-radius: 12px;
+  border: 1px solid var(--pf-border);
+  flex: none;
+}
+
+.pf-profile-name {
+  font-family: var(--pf-font-display);
+  font-weight: 700;
+  font-size: 26px;
+  line-height: 1;
+}
+
+.pf-profile-meta {
+  font-family: var(--pf-font-mono);
+  font-size: 9px;
+  color: var(--pf-text-secondary);
+  margin-top: 5px;
+  letter-spacing: 0.1em;
+}
+
+.pf-pair-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.pf-pair-card {
+  border: 1px solid var(--pf-border);
+  border-radius: 12px;
+  background: var(--pf-surface);
+  padding: 13px;
+}
+
+.pf-pair-label {
+  font-family: var(--pf-font-mono);
+  font-size: 8.5px;
+  letter-spacing: 0.14em;
+  color: var(--pf-text-secondary);
+}
+
+.pf-pair-value {
+  font-family: var(--pf-font-display);
+  font-weight: 700;
+  font-size: 30px;
+  margin-top: 5px;
+}
+
+.pf-limitations-list,
+.pf-shortcuts-list {
+  border: 1px solid var(--pf-border);
+  border-radius: 14px;
+  background: var(--pf-surface);
+  overflow: hidden;
+}
+
+.pf-limitation-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 15px;
+  border-bottom: 1px solid var(--pf-border-soft);
+}
+
+.pf-limitation-row:last-child {
+  border-bottom: none;
+}
+
+.pf-limitation-area {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.pf-limitation-note {
+  font-size: 11.5px;
+  color: var(--pf-text-secondary);
+  margin-top: 4px;
+}
+
+.pf-limitation-bar-wrap {
+  width: 70px;
+  flex: none;
+}
+
+.pf-limitation-pct {
+  font-family: var(--pf-font-mono);
+  font-size: 8.5px;
+  color: var(--pf-text-secondary);
+  margin-top: 5px;
+  text-align: right;
+}
+
+.pf-shortcut-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 15px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--pf-border-soft);
+  background: none;
+  width: 100%;
+  text-align: left;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  color: inherit;
+}
+
+.pf-shortcut-row:last-child {
+  border-bottom: none;
+}
+
+.pf-shortcut-label {
+  flex: 1;
+  font-size: 13px;
+}
+
+.pf-shortcut-hint {
+  font-family: var(--pf-font-mono);
+  font-size: 9px;
+  color: var(--pf-text-secondary);
+  letter-spacing: 0.1em;
+}
+
+.pf-shortcut-chevron {
+  color: var(--pf-text-faint);
+  font-size: 13px;
+}

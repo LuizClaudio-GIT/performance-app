@@ -1,0 +1,141 @@
+.pf-metrics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.pf-metric-card {
+  border: 1px solid var(--pf-border);
+  border-radius: 12px;
+  background: var(--pf-surface);
+  padding: 13px 12px;
+}
+
+.pf-metric-name {
+  font-size: 11.5px;
+  color: var(--pf-text-secondary);
+}
+
+.pf-metric-value {
+  font-family: var(--pf-font-display);
+  font-weight: 700;
+  font-size: 30px;
+  line-height: 1.1;
+  margin-top: 3px;
+}
+
+.pf-metric-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 6px;
+}
+
+.pf-metric-base {
+  font-family: var(--pf-font-mono);
+  font-size: 8.5px;
+  color: var(--pf-text-faint);
+}
+
+.pf-metric-delta {
+  font-family: var(--pf-font-mono);
+  font-size: 9.5px;
+  color: var(--pf-accent);
+}
+
+.pf-progressions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pf-progression-card {
+  border: 1px solid var(--pf-border);
+  border-radius: 14px;
+  background: var(--pf-surface);
+  padding: 15px 15px 13px;
+}
+
+.pf-progression-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.pf-progression-name {
+  font-family: var(--pf-font-display);
+  font-weight: 700;
+  font-size: 26px;
+  line-height: 1;
+}
+
+.pf-progression-stage {
+  font-family: var(--pf-font-mono);
+  font-size: 9px;
+  color: var(--pf-accent);
+}
+
+.pf-progression-note {
+  font-size: 11.5px;
+  color: var(--pf-text-secondary);
+  margin-top: 7px;
+  line-height: 1.45;
+}
+
+.pf-progression-steps {
+  margin-top: 13px;
+}
+
+.pf-measures-list {
+  border: 1px solid var(--pf-border);
+  border-radius: 14px;
+  background: var(--pf-surface);
+  overflow: hidden;
+}
+
+.pf-measure-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 15px;
+  border-bottom: 1px solid var(--pf-border-soft);
+}
+
+.pf-measure-row:last-child {
+  border-bottom: none;
+}
+
+.pf-measure-name {
+  flex: 1;
+  font-size: 12.5px;
+}
+
+.pf-measure-base {
+  font-family: var(--pf-font-mono);
+  font-size: 10px;
+  color: var(--pf-text-faint);
+  width: 56px;
+  text-align: right;
+}
+
+.pf-measure-now {
+  font-family: var(--pf-font-display);
+  font-weight: 700;
+  font-size: 20px;
+  width: 70px;
+  text-align: right;
+}
+
+.pf-measure-delta {
+  font-family: var(--pf-font-mono);
+  font-size: 10px;
+  width: 52px;
+  text-align: right;
+  color: var(--pf-accent);
+}
+
+@media (min-width: 640px) {
+  .pf-metrics-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
