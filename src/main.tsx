@@ -11,6 +11,8 @@ import './styles/alimentacao.css';
 import './styles/evolucao.css';
 import './styles/mais.css';
 import './styles/session.css';
+import './styles/forms.css';
+import './styles/modal.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

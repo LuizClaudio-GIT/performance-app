@@ -39,6 +39,10 @@
   align-items: stretch;
   border-radius: 12px;
   overflow: hidden;
+  width: 100%;
+  padding: 0;
+  font: inherit;
+  color: inherit;
 }
 
 .pf-week-day {

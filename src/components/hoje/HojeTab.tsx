@@ -1,12 +1,38 @@
-import { BLOCKS, DAILY_STATS } from '../../data/mockData';
-import { useAppState } from '../../state/AppState';
-import { DumbbellIcon, PlayGlyph } from '../common/Icons';
+import { useState } from 'react';
+import { getBlock } from '../../data/catalog';
+import { dayMonthLongUpper, formatDecimal, formatInt, weekdayLongUpper } from '../../lib/date';
+import { useAppState, useTodayPlan, useTodayWater } from '../../state/AppState';
+import { useToast } from '../common/Toast';
+import { LogStatModal } from '../common/LogStatModal';
+import { DumbbellIcon } from '../common/Icons';
 import { ChecklistCard } from './ChecklistCard';
 import { ComplementaryBlockCard } from './ComplementaryBlockCard';
 
+type StatModalKind = 'peso' | 'passos' | 'agua' | null;
+
 export function HojeTab() {
-  const { blockDone } = useAppState();
-  const blocksDone = BLOCKS.filter((b) => blockDone[b.id]).length;
+  const { data, today, toggleBoxWorkoutDone, logWeight, setSteps, addWater } = useAppState();
+  const { showToast } = useToast();
+  const plan = useTodayPlan();
+  const water = useTodayWater();
+  const [openModal, setOpenModal] = useState<StatModalKind>(null);
+
+  const latestWeight = [...data.weightLog].filter((w) => w.date <= today).sort((a, b) => b.date.localeCompare(a.date))[0];
+  const steps = data.steps[today] ?? 0;
+
+  const blocks = plan.complementaryBlockIds.map((id) => getBlock(id)).filter((b): b is NonNullable<typeof b> => !!b);
+  const blocksDone = blocks.filter((b) =>
+    data.sessions.some((s) => s.blockId === b.id && s.date === today && s.status === 'completed'),
+  ).length;
+
+  const focusTitle = blocks.length > 0 ? blocks.map((b) => b.name).join(' + ') : 'DIA DE DESCANSO';
+  const focusTags = Array.from(new Set(blocks.flatMap((b) => b.tags))).slice(0, 3);
+  const focusObjective =
+    blocks.length > 0
+      ? blocks.map((b) => b.obj).join(' ')
+      : plan.note || 'Aproveite para recuperar — mobilidade leve e sono são treino também.';
+
+  const boxDone = !!data.boxWorkoutDone[today];
 
   return (
     <div className="pf-page">
@@ -16,9 +42,9 @@ export function HojeTab() {
         <div className="pf-hero-tag">FOTO P&amp;B — ATLETA</div>
         <div className="pf-hero-body">
           <div className="pf-hero-date">
-            SEGUNDA-FEIRA
+            {weekdayLongUpper(today)}
             <br />
-            21 DE SETEMBRO
+            {dayMonthLongUpper(today)}
           </div>
           <div className="pf-hero-title">HOJE</div>
           <div className="pf-underline" style={{ margin: 0, marginBottom: 12 }} />
@@ -31,83 +57,108 @@ export function HojeTab() {
           <div className="pf-focus-dot" />
           <div className="pf-focus-label">FOCO DE HOJE</div>
         </div>
-        <div className="pf-focus-title">MOBILIDADE + GINÁSTICA</div>
-        <div className="pf-focus-tags">
-          <span className="pf-tag pf-tag--accent">DORSIFLEXÃO</span>
-          <span className="pf-tag pf-tag--accent">BASE HANDSTAND</span>
-        </div>
+        <div className="pf-focus-title">{focusTitle}</div>
+        {focusTags.length > 0 && (
+          <div className="pf-focus-tags">
+            {focusTags.map((t) => (
+              <span className="pf-tag pf-tag--accent" key={t}>
+                {t}
+              </span>
+            ))}
+          </div>
+        )}
         <div className="pf-focus-objective">
           <strong>Objetivo: </strong>
-          melhorar a profundidade do agachamento e construir suporte de ombro para a parede.
+          {focusObjective}
         </div>
       </div>
 
-      <div className="pf-section-head">
-        <div className="pf-section-label">CONTEXTO — TREINO DO BOX</div>
-        <div className="pf-section-count">NÃO PRESCRITO AQUI</div>
-      </div>
+      {plan.type === 'treino' && (
+        <>
+          <div className="pf-section-head">
+            <div className="pf-section-label">CONTEXTO — TREINO DO BOX</div>
+            <div className="pf-section-count">NÃO PRESCRITO AQUI</div>
+          </div>
 
-      <div className="pf-box-card">
-        <div className="pf-box-head">
-          <div className="pf-box-icon">
-            <DumbbellIcon />
-          </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div className="pf-box-name">CROSSFIT</div>
-            <div className="pf-box-meta">07:00 — 08:00 · BOX PERFORMANCE</div>
-          </div>
-          <span className="pf-badge">EM BREVE</span>
-        </div>
-        <div className="pf-wod">
-          <div className="pf-wod-body">
-            <div className="pf-wod-label">WOD DO DIA</div>
-            <div className="pf-wod-text">
-              For time:
-              <br />
-              500 m Row
-              <br />
-              21 Thrusters (43/30)
-              <br />
-              15 Pull-ups
-              <br />9 Burpees
+          <div className="pf-box-card">
+            <div className="pf-box-head">
+              <div className="pf-box-icon">
+                <DumbbellIcon />
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div className="pf-box-name">{plan.boxLabel || 'CROSSFIT'}</div>
+                <div className="pf-box-meta">{data.profile.box}</div>
+              </div>
+              <button
+                className="pf-badge"
+                style={{
+                  cursor: 'pointer',
+                  border: `1px solid ${boxDone ? 'var(--pf-accent-border)' : 'var(--pf-border)'}`,
+                  color: boxDone ? 'var(--pf-accent)' : 'var(--pf-text-secondary)',
+                  background: boxDone ? 'var(--pf-accent-soft)' : 'transparent',
+                }}
+                onClick={() => {
+                  toggleBoxWorkoutDone();
+                  showToast(boxDone ? 'Treino do box desmarcado.' : 'Treino do box registrado!');
+                }}
+              >
+                {boxDone ? '✓ CONCLUÍDO' : 'MARCAR CONCLUÍDO'}
+              </button>
             </div>
+            {plan.boxWorkoutBody && (
+              <div className="pf-wod">
+                <div className="pf-wod-body">
+                  <div className="pf-wod-label">{plan.boxWorkoutTitle || 'WOD DO DIA'}</div>
+                  <div className="pf-wod-text" style={{ whiteSpace: 'pre-line' }}>
+                    {plan.boxWorkoutBody}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
-          <div className="pf-wod-cta">
-            <div className="pf-wod-play">
-              <PlayGlyph />
-            </div>
-            <div className="pf-wod-cta-label">
-              VER
-              <br />
-              DETALHES
-            </div>
-          </div>
-        </div>
-      </div>
+        </>
+      )}
 
       <div className="pf-section-head">
         <div className="pf-section-label pf-section-label--accent">DESENVOLVIMENTO COMPLEMENTAR</div>
-        <div className="pf-section-count">{blocksDone}/3</div>
+        <div className="pf-section-count">
+          {blocksDone}/{blocks.length || 0}
+        </div>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {BLOCKS.map((b) => (
-          <ComplementaryBlockCard key={b.id} block={b} />
-        ))}
-      </div>
+      {blocks.length === 0 ? (
+        <div className="pf-empty-state">Nenhum bloco complementar planejado para hoje.</div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {blocks.map((b) => (
+            <ComplementaryBlockCard key={b.id} block={b} />
+          ))}
+        </div>
+      )}
 
       <ChecklistCard />
 
       <div className="pf-stats-grid">
-        {DAILY_STATS.map((s) => (
-          <div className="pf-stat-card" key={s.label}>
-            <div className="pf-stat-label">{s.label}</div>
-            <div className="pf-stat-value">{s.value}</div>
-            <div className="pf-progress-track pf-progress-track--thin" style={{ marginTop: 9 }}>
-              <div className="pf-progress-fill" style={{ width: `${s.pct}%` }} />
-            </div>
-            <div className="pf-stat-sub">{s.sub}</div>
+        <button className="pf-stat-card" style={{ textAlign: 'left', cursor: 'pointer' }} onClick={() => setOpenModal('peso')}>
+          <div className="pf-stat-label">PESO</div>
+          <div className="pf-stat-value">{latestWeight ? formatDecimal(latestWeight.kg) : '—'}</div>
+          <div className="pf-stat-sub">{latestWeight?.date === today ? 'registrado hoje' : 'toque para registrar'}</div>
+        </button>
+        <button className="pf-stat-card" style={{ textAlign: 'left', cursor: 'pointer' }} onClick={() => setOpenModal('passos')}>
+          <div className="pf-stat-label">PASSOS</div>
+          <div className="pf-stat-value">{formatInt(steps)}</div>
+          <div className="pf-progress-track pf-progress-track--thin" style={{ marginTop: 9 }}>
+            <div className="pf-progress-fill" style={{ width: `${Math.min(100, (steps / data.goals.stepsGoal) * 100)}%` }} />
           </div>
-        ))}
+          <div className="pf-stat-sub">meta {formatInt(data.goals.stepsGoal)}</div>
+        </button>
+        <button className="pf-stat-card" style={{ textAlign: 'left', cursor: 'pointer' }} onClick={() => setOpenModal('agua')}>
+          <div className="pf-stat-label">ÁGUA</div>
+          <div className="pf-stat-value">{formatDecimal(water)} L</div>
+          <div className="pf-progress-track pf-progress-track--thin" style={{ marginTop: 9 }}>
+            <div className="pf-progress-fill" style={{ width: `${Math.min(100, (water / data.goals.waterGoalL) * 100)}%` }} />
+          </div>
+          <div className="pf-stat-sub">meta {formatDecimal(data.goals.waterGoalL)} L</div>
+        </button>
       </div>
 
       <div className="pf-banner">
@@ -119,6 +170,46 @@ export function HojeTab() {
           RESULTADOS AMANHÃ.
         </div>
       </div>
+
+      {openModal === 'peso' && (
+        <LogStatModal
+          title="Registrar peso"
+          label="Peso"
+          unit="kg"
+          initialValue={latestWeight?.date === today ? latestWeight.kg : latestWeight?.kg ?? 0}
+          onSave={(v) => {
+            logWeight(v);
+            showToast('Peso registrado!');
+          }}
+          onClose={() => setOpenModal(null)}
+        />
+      )}
+      {openModal === 'passos' && (
+        <LogStatModal
+          title="Registrar passos"
+          label="Passos"
+          unit="passos"
+          initialValue={steps}
+          onSave={(v) => {
+            setSteps(Math.round(v));
+            showToast('Passos atualizados!');
+          }}
+          onClose={() => setOpenModal(null)}
+        />
+      )}
+      {openModal === 'agua' && (
+        <LogStatModal
+          title="Registrar água"
+          label="Total de hoje"
+          unit="L"
+          initialValue={water}
+          onSave={(v) => {
+            addWater(v - water);
+            showToast('Água registrada!');
+          }}
+          onClose={() => setOpenModal(null)}
+        />
+      )}
     </div>
   );
 }

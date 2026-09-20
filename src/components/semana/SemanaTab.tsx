@@ -1,21 +1,24 @@
-import { WEEK } from '../../data/mockData';
-import type { WorkKind } from '../../types';
+import { useState } from 'react';
+import { getBlock } from '../../data/catalog';
+import { dayMonthShort, weekDates, weekdayShort } from '../../lib/date';
+import { useAppState } from '../../state/AppState';
+import { getDayPlan, weekDayStatus, weeklyComplementaryVolume, type WeekDayStatus } from '../../state/logic';
+import { DayDetailModal } from './DayDetailModal';
 
-const WORK_COLOR: Record<WorkKind, string> = {
-  done: 'var(--pf-accent)',
-  today: 'var(--pf-accent)',
-  next: 'var(--pf-text)',
-  rest: 'var(--pf-text-secondary)',
-};
-
-const WORK_BG: Record<WorkKind, string> = {
-  done: 'rgba(198,255,0,.10)',
-  today: 'rgba(198,255,0,.14)',
-  next: 'transparent',
-  rest: 'transparent',
+const STATUS_COLOR: Record<WeekDayStatus, string> = {
+  CONCLUÍDO: 'var(--pf-accent)',
+  HOJE: 'var(--pf-accent)',
+  PLANEJADO: 'var(--pf-text-secondary)',
+  LEVE: 'var(--pf-text-secondary)',
+  DESCANSO: 'var(--pf-text-secondary)',
 };
 
 export function SemanaTab() {
+  const { data, today } = useAppState();
+  const [openDate, setOpenDate] = useState<string | null>(null);
+  const week = weekDates(today);
+  const volume = weeklyComplementaryVolume(data, week);
+
   return (
     <div className="pf-page">
       <div className="pf-page-header">
@@ -37,66 +40,77 @@ export function SemanaTab() {
       <div className="pf-volume-card">
         <div className="pf-volume-head">
           <div className="pf-section-label">VOLUME COMPLEMENTAR</div>
-          <div className="pf-volume-value">62%</div>
+          <div className="pf-volume-value">{volume.pct}%</div>
         </div>
         <div className="pf-progress-track" style={{ marginTop: 10 }}>
-          <div className="pf-progress-fill" style={{ width: '62%' }} />
+          <div className="pf-progress-fill" style={{ width: `${volume.pct}%` }} />
         </div>
         <div className="pf-volume-foot">
-          <span>5 DE 8 SESSÕES</span>
+          <span>
+            {volume.done} DE {volume.planned} SESSÕES
+          </span>
           <span>META SEMANAL</span>
         </div>
       </div>
 
       <div className="pf-week-list">
-        {WEEK.map((d) => {
-          const today = d.state === 'HOJE';
+        {week.map((date) => {
+          const plan = getDayPlan(data, date);
+          const status = weekDayStatus(data, date);
+          const isToday = status === 'HOJE';
+          const blocks = plan.complementaryBlockIds.map((id) => getBlock(id)).filter((b): b is NonNullable<typeof b> => !!b);
           return (
-            <div
+            <button
               className="pf-week-row"
-              key={d.day}
+              key={date}
+              onClick={() => setOpenDate(date)}
               style={{
-                border: `1px solid ${today ? 'var(--pf-accent-border)' : 'var(--pf-border)'}`,
-                background: d.state === 'DESCANSO' ? 'var(--pf-surface-muted)' : 'var(--pf-surface)',
+                border: `1px solid ${isToday ? 'var(--pf-accent-border)' : 'var(--pf-border)'}`,
+                background: plan.type === 'descanso' ? 'var(--pf-surface-muted)' : 'var(--pf-surface)',
+                cursor: 'pointer',
+                textAlign: 'left',
               }}
             >
               <div
                 className="pf-week-day"
                 style={{
-                  background: today ? 'var(--pf-accent-soft)' : 'transparent',
-                  color: today ? 'var(--pf-accent)' : 'var(--pf-text)',
+                  background: isToday ? 'var(--pf-accent-soft)' : 'transparent',
+                  color: isToday ? 'var(--pf-accent)' : 'var(--pf-text)',
                 }}
               >
-                <div className="pf-week-day-num">{d.day}</div>
-                <div className="pf-week-day-date">{d.date}</div>
+                <div className="pf-week-day-num">{weekdayShort(date)}</div>
+                <div className="pf-week-day-date">{dayMonthShort(date)}</div>
               </div>
               <div className="pf-week-body">
-                <div className="pf-week-box">BOX · {d.box}</div>
+                <div className="pf-week-box">BOX · {plan.type === 'treino' ? plan.boxLabel : '—'}</div>
                 <div className="pf-week-work">
-                  {d.work.map((w) => (
-                    <span
-                      className="pf-week-work-tag"
-                      key={w.label}
-                      style={{
-                        border: `1px solid ${w.kind === 'today' ? 'var(--pf-accent-border)' : 'var(--pf-border)'}`,
-                        background: WORK_BG[w.kind],
-                        color: WORK_COLOR[w.kind],
-                      }}
-                    >
-                      {w.label}
+                  {blocks.length === 0 && plan.type !== 'treino' && (
+                    <span className="pf-week-work-tag" style={{ border: '1px solid var(--pf-border)', color: 'var(--pf-text-secondary)' }}>
+                      {plan.note || (plan.type === 'descanso' ? 'Recuperação' : 'Leve')}
                     </span>
-                  ))}
+                  )}
+                  {blocks.map((b) => {
+                    const done = data.sessions.some((s) => s.blockId === b.id && s.date === date && s.status === 'completed');
+                    return (
+                      <span
+                        className="pf-week-work-tag"
+                        key={b.id}
+                        style={{
+                          border: `1px solid ${isToday && !done ? 'var(--pf-accent-border)' : 'var(--pf-border)'}`,
+                          background: done ? 'rgba(198,255,0,.10)' : isToday ? 'rgba(198,255,0,.14)' : 'transparent',
+                          color: done || isToday ? 'var(--pf-accent)' : 'var(--pf-text)',
+                        }}
+                      >
+                        {b.name}
+                      </span>
+                    );
+                  })}
                 </div>
               </div>
-              <div
-                className="pf-week-state"
-                style={{
-                  color: d.state === 'CONCLUÍDO' || d.state === 'HOJE' ? 'var(--pf-accent)' : 'var(--pf-text-secondary)',
-                }}
-              >
-                {d.state}
+              <div className="pf-week-state" style={{ color: STATUS_COLOR[status] }}>
+                {status}
               </div>
-            </div>
+            </button>
           );
         })}
       </div>
@@ -106,6 +120,8 @@ export function SemanaTab() {
         <br />
         GRANDES RESULTADOS.
       </div>
+
+      {openDate && <DayDetailModal date={openDate} onClose={() => setOpenDate(null)} />}
     </div>
   );
 }

@@ -9,6 +9,7 @@ import { SemanaTab } from './components/semana/SemanaTab';
 import { SessionCompleteModal } from './components/session/SessionCompleteModal';
 import { SessionOverlay } from './components/session/SessionOverlay';
 import { AppStateProvider, useAppState } from './state/AppState';
+import { ToastProvider } from './components/common/Toast';
 
 function TabContent() {
   const { tab } = useAppState();
@@ -29,7 +30,7 @@ function TabContent() {
 }
 
 function AppShell() {
-  const { sessionBlockId } = useAppState();
+  const { activeSession } = useAppState();
 
   return (
     <div className="pf-app">
@@ -43,7 +44,7 @@ function AppShell() {
         </div>
         <BottomNav />
 
-        {sessionBlockId && <SessionOverlay />}
+        {activeSession && <SessionOverlay />}
         <SessionCompleteModal />
       </div>
     </div>
@@ -53,7 +54,9 @@ function AppShell() {
 export default function App() {
   return (
     <AppStateProvider>
-      <AppShell />
+      <ToastProvider>
+        <AppShell />
+      </ToastProvider>
     </AppStateProvider>
   );
 }

@@ -1,4 +1,7 @@
+import { useAppState } from '../../state/AppState';
+
 export function Header() {
+  const { data } = useAppState();
   return (
     <header className="pf-header">
       <div className="pf-header-brand">
@@ -6,9 +9,9 @@ export function Header() {
         <div className="pf-header-wordmark">PERFORMANCE</div>
       </div>
       <div className="pf-header-meta">
-        SEMANA 01
+        {data.profile.weekLabel.toUpperCase()}
         <br />
-        FOUNDATION
+        {data.profile.phase.toUpperCase()}
       </div>
     </header>
   );
