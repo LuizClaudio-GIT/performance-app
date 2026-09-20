@@ -106,9 +106,11 @@ export function getChecklistItems(data: AppData, date: string): ChecklistItem[] 
 export type WeekDayStatus = 'CONCLUÍDO' | 'HOJE' | 'PLANEJADO' | 'LEVE' | 'DESCANSO';
 
 export function weekDayStatus(data: AppData, date: string): WeekDayStatus {
+  // "today" always wins the label, even on a rest/light day — the day's
+  // type is still conveyed by the row content, not by the status badge.
+  if (isToday(date)) return 'HOJE';
   const plan = getDayPlan(data, date);
   if (plan.type === 'descanso') return 'DESCANSO';
-  if (isToday(date)) return 'HOJE';
   if (plan.type === 'leve') return 'LEVE';
   if (isFutureDate(date)) return 'PLANEJADO';
   // past training day

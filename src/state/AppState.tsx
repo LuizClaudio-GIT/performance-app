@@ -79,7 +79,9 @@ interface AppStateValue {
 
   // Session runtime
   activeSession: SessionLog | null;
+  sessionViewOpen: boolean;
   startSession: (blockId: string) => void;
+  resumeSession: () => void;
   togglePauseSession: () => void;
   goToExercise: (index: number) => void;
   toggleSetDone: (exIndex: number, setIndex: number) => void;
@@ -109,6 +111,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const [evoTab, setEvoTab] = useState<EvoTabId>('resumo');
   const [showDone, setShowDone] = useState(false);
   const [lastCompletedBlockName, setLastCompletedBlockName] = useState<string | null>(null);
+  const [sessionViewOpen, setSessionViewOpen] = useState(false);
 
   const today = todayISO();
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -312,12 +315,24 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
 
   const startSession = useCallback(
     (blockId: string) => {
-      const session = buildSessionFromBlock(blockId, today);
-      if (!session) return;
-      update((d) => ({ ...d, activeSession: session }));
+      update((d) => {
+        // Resume in place if there's already an in-progress session for this
+        // block today — starting fresh here would silently discard progress.
+        if (d.activeSession && d.activeSession.blockId === blockId && d.activeSession.date === today) {
+          return d;
+        }
+        const session = buildSessionFromBlock(blockId, today);
+        if (!session) return d;
+        return { ...d, activeSession: session };
+      });
+      setSessionViewOpen(true);
     },
     [today, update],
   );
+
+  const resumeSession = useCallback(() => {
+    setSessionViewOpen(true);
+  }, []);
 
   const togglePauseSession = useCallback(() => {
     update((d) => (d.activeSession ? { ...d, activeSession: { ...d.activeSession, paused: !d.activeSession.paused } } : d));
@@ -403,6 +418,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         restSecondsLeft: 0,
       };
       setShowDone(true);
+      setSessionViewOpen(false);
       setLastCompletedBlockName(completed.blockName);
       return { ...d, sessions: [...d.sessions, completed], activeSession: null };
     });
@@ -410,6 +426,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
 
   const saveAndExitSession = useCallback(() => {
     // activeSession is already persisted continuously; exiting just closes the overlay.
+    setSessionViewOpen(false);
     setTab('hoje');
   }, []);
 
@@ -419,6 +436,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       const abandoned: SessionLog = { ...d.activeSession, status: 'abandoned', endedAt: new Date().toISOString() };
       return { ...d, sessions: [...d.sessions, abandoned], activeSession: null };
     });
+    setSessionViewOpen(false);
   }, [update]);
 
   const closeDone = useCallback(() => {
@@ -489,7 +507,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     updateGoals,
     updateSettings,
     activeSession: data.activeSession,
+    sessionViewOpen,
     startSession,
+    resumeSession,
     togglePauseSession,
     goToExercise,
     toggleSetDone,

@@ -30,7 +30,7 @@ function TabContent() {
 }
 
 function AppShell() {
-  const { activeSession } = useAppState();
+  const { activeSession, sessionViewOpen } = useAppState();
 
   return (
     <div className="pf-app">
@@ -44,7 +44,7 @@ function AppShell() {
         </div>
         <BottomNav />
 
-        {activeSession && <SessionOverlay />}
+        {activeSession && sessionViewOpen && <SessionOverlay />}
         <SessionCompleteModal />
       </div>
     </div>

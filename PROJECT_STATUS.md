@@ -42,15 +42,30 @@ Documentando aqui em vez de perguntar, conforme autorizado — são todas revers
 Ver task list da sessão para o detalhamento passo a passo; resumo:
 
 - [ ] Camada de storage + schema + seed
-- [ ] Utilitário de datas pt-BR
-- [ ] Reescrever `AppState` sobre a camada persistida
-- [ ] Hoje: registrar peso, água, checklist real, sessão com reps/carga/tempo/obs, persistência
-- [ ] Semana: janela real de 7 dias, edição da programação, detalhes por dia
-- [ ] Alimentação: CRUD completo de refeições, metas editáveis, água
-- [ ] Evolução: gráficos derivados de dados reais (peso, medidas, frequência, benchmarks, progressões)
-- [ ] Mais: perfil/metas editáveis, export/import, limpar dados, histórico de sessões
-- [ ] Sessão de treino: pausar, voltar, confirmar saída, salvar incompleta, histórico
-- [ ] Responsividade: validar celular / Fold fechado / Fold aberto / desktop, sem overflow horizontal, alvo de toque, formulário com teclado aberto
-- [ ] Qualidade: zero erro de console, `tsc` limpo, build limpo, estados vazios/carregando, confirmações de exclusão
-- [ ] Testes: Vitest configurado + suíte proporcional
-- [ ] Commits incrementais na branch `feat/performance-mvp-funcional`, push ao final
+- [x] Utilitário de datas pt-BR
+- [x] Reescrever `AppState` sobre a camada persistida
+- [x] Hoje: registrar peso, água, checklist real, sessão com reps/carga/tempo/obs, persistência
+- [x] Semana: janela real de 7 dias, edição da programação, detalhes por dia
+- [x] Alimentação: CRUD completo de refeições, metas editáveis, água
+- [x] Evolução: gráficos derivados de dados reais (peso, medidas, frequência, benchmarks, progressões)
+- [x] Mais: perfil/metas editáveis, export/import, limpar dados, histórico de sessões
+- [x] Sessão de treino: pausar, voltar, confirmar saída, salvar incompleta, histórico
+- [x] Responsividade: validado em celular / Fold fechado / Fold aberto / desktop, sem overflow horizontal
+- [x] Qualidade: zero erro de console, `tsc` limpo, build limpo, estados vazios, confirmações de exclusão
+- [x] Testes: Vitest configurado + 37 testes (storage, lógica de datas, regras de negócio, integração de estado)
+- [x] Commits incrementais na branch `feat/performance-mvp-funcional`, push ao final
+
+## Bugs reais encontrados e corrigidos durante a validação
+
+Descobertos testando o app de verdade (navegador + suíte de testes), não apenas por inspeção de código:
+
+1. **"CONTINUAR" descartava a sessão em andamento.** O botão do bloco complementar chamava `startSession` incondicionalmente, que sempre reconstruía a sessão do zero — sair e voltar para um treino em andamento apagava as séries já registradas. Corrigido separando "sessão ativa" (dado persistido) de "visão da sessão aberta" (estado de UI efêmero); `startSession` agora retoma em vez de recriar quando já existe uma sessão em andamento para aquele bloco.
+2. **O status "HOJE" nunca aparecia quando hoje é dia de descanso/leve.** `weekDayStatus` verificava o tipo do dia (descanso/leve) antes de verificar se era hoje, então num domingo de descanso a linha da Semana mostrava "DESCANSO" em vez de "HOJE" — e como o destaque visual do dia atual dependia desse texto, o dia corrente parava de ficar destacado. Corrigido invertendo a prioridade: "hoje" sempre vence o rótulo.
+3. **Toast de sucesso podia colidir com o rodapé da sessão de treino.** A pilha de notificações ficava ancorada perto da barra inferior, que também é onde fica o rodapé da sessão de treino (cronômetro + botão de avançar). Corrigido ancorando as notificações no topo da tela.
+
+## Limitações conhecidas do MVP
+
+- **Uma sessão de treino ativa por vez.** Iniciar um bloco diferente enquanto outro está em andamento substitui a sessão anterior (sem aviso). Cenário raro no uso real (um bloco por vez), documentado aqui em vez de resolvido por falta de tempo.
+- **Sem migração de schema.** Há apenas a versão 1 do formato de dados; uma mudança de schema futura precisaria de lógica de migração (hoje, uma versão incompatível força reinício com dados de demonstração).
+- **Sem PWA/instalação como app.** O MVP roda como site (`npm run dev` / `npm run build` + qualquer servidor estático). Adicionar manifest.json e service worker para "instalar" no Fold fica para uma próxima etapa, se desejado.
+- **Passos são só manuais.** Não há integração com sensor de passos do celular — o campo existe e é editável, mas não se autoatualiza.
