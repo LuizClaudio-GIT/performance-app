@@ -1,25 +1,89 @@
-# CODING AGENTS: READ THIS FIRST
+# Performance
 
-This is a **handoff bundle** from Claude Design (claude.ai/design).
+App pessoal de acompanhamento de evolução no CrossFit — treino, alimentação, hidratação, peso, medidas, benchmarks e progressões de habilidades, com o objetivo de longo prazo de evoluir até nível competitivo.
 
-A user mocked up designs in HTML/CSS/JS using an AI design tool, then exported this bundle so a coding agent can implement the designs for real.
+Roda 100% no navegador, sem backend: os dados ficam no `localStorage` do dispositivo.
 
-## What you should do — IMPORTANT
+## Stack
 
-**Read the chat transcripts first.** There are 1 chat transcript(s) in `chats/`. The transcripts show the full back-and-forth between the user and the design assistant — they tell you **what the user actually wants** and **where they landed** after iterating. Don't skip them. The final HTML files are the output, but the chat is where the intent lives.
+- React 18 + TypeScript
+- Vite (dev server e build)
+- Vitest + Testing Library (testes)
+- CSS puro (sem framework de UI), tokens de design em `src/styles/tokens.css`
 
-**Read `project/Performance App.dc.html` in full.** The user had this file open when they triggered the handoff, so it's almost certainly the primary design they want built. Read it top to bottom — don't skim. Then **follow its imports**: open every file it pulls in (shared components, CSS, scripts) so you understand how the pieces fit together before you start implementing.
+## Instalação
 
-**If anything is ambiguous, ask the user to confirm before you start implementing.** It's much cheaper to clarify scope up front than to build the wrong thing.
+```bash
+npm install
+```
 
-## About the design files
+## Executar em desenvolvimento
 
-The design medium is **HTML/CSS/JS** — these are prototypes, not production code. Your job is to **recreate them pixel-perfectly** in whatever technology makes sense for the target codebase (React, Vue, native, whatever fits). Match the visual output; don't copy the prototype's internal structure unless it happens to fit.
+```bash
+npm run dev
+```
 
-**Don't render these files in a browser or take screenshots unless the user asks you to.** Everything you need — dimensions, colors, layout rules — is spelled out in the source. Read the HTML and CSS directly; a screenshot won't tell you anything they don't.
+Abre o Vite dev server (por padrão em `http://localhost:5173`).
 
-## Bundle contents
+## Testes
 
-- `README.md` — this file
-- `chats/` — conversation transcripts (read these!)
-- `project/` — the `Protótipo de app de treinamento` project files (HTML prototypes, assets, components)
+```bash
+npm test        # roda a suíte uma vez (vitest run)
+npm run test:watch  # modo watch
+```
+
+## Build de produção
+
+```bash
+npm run build   # tsc -b && vite build — gera dist/
+npm run preview # serve o build gerado localmente
+```
+
+## Typecheck
+
+```bash
+npm run lint     # tsc --noEmit
+```
+
+## Arquitetura resumida
+
+```
+src/
+  data/        modelo de dados (schema.ts), catálogo de exercícios/progressões (catalog.ts, conteúdo estático), seed de demonstração (seed.ts)
+  storage/     camada de leitura/escrita em localStorage, versionamento de schema, export/import
+  state/       AppState.tsx (Context + Provider, única fonte de verdade da UI) e logic.ts (funções puras de derivação: checklist, status semanal, séries de métricas, ciclo de vida de sessão)
+  components/  UI por aba (hoje, semana, alimentacao, evolucao, mais), session/ (overlay de treino complementar), common/ (Modal, Toast, ConfirmDialog, LogStatModal), layout/ (Header, BottomNav, SidePanel)
+  lib/date.ts  utilitários de data/hora reais em pt-BR (sem hardcode de datas)
+  styles/      CSS por área + tokens.css (cores, fontes, breakpoint)
+```
+
+Fluxo de dados: `AppState.tsx` carrega o `AppData` do storage uma vez, expõe ações (métodos) que mutam o estado React e persistem a cada mudança (com pequeno debounce). Os componentes de tela não tocam o storage diretamente — sempre passam por `useAppState()`. A lógica de derivação (o que conta como "concluído hoje", séries para gráficos, etc.) fica isolada em `state/logic.ts`, testada sem precisar renderizar componentes.
+
+## Persistência / localStorage
+
+- Chave única: `performance:v1`.
+- Schema versionado (`SCHEMA_VERSION` em `src/data/schema.ts`). Uma versão incompatível ou JSON corrompido faz o app reiniciar com dados de demonstração — **não há migração de schema no momento** (ver Limitações).
+- Primeira execução sem nada salvo: o app é inicializado a partir de `src/data/seed.ts` (dados de demonstração, ancorados na semana real atual). A partir daí, toda edição do usuário é dado real.
+- Em "Mais → Limpar dados" o usuário pode apagar tudo ou restaurar a demonstração, sempre com confirmação.
+- Export/Import: "Mais → Exportar/Importar backup" baixa/lê um `.json` com o `AppData` completo, validando `schemaVersion` no import.
+
+## Principais funcionalidades do MVP
+
+- **Hoje**: data real, WOD do box (texto livre + marcar concluído), blocos complementares planejados, checklist do dia (derivado de dados reais, não uma lista separada), registro de peso/passos/água.
+- **Sessão complementar**: reps/carga/tempo/observação por série, pausar, avançar/voltar entre exercícios, saída segura (auto-salva em progresso, confirmação para abandonar), sessão em andamento sobrevive a refresh.
+- **Semana**: janela real de 7 dias (segunda a domingo), edição da programação por dia (tipo de dia, WOD, blocos complementares), status calculado a partir do que foi realmente concluído.
+- **Alimentação**: CRUD completo de refeições, anel de kcal e barra de proteína calculados a partir de refeições marcadas como feitas, registro de água.
+- **Evolução**: séries de peso, medidas corporais e "performance" (benchmarks) com sparkline e delta base→atual; progressões de habilidade (handstand, pull-up) com etapas navegáveis.
+- **Mais**: perfil/metas editáveis, limitações (CRUD), histórico de sessões, sequência de dias ativos, export/import de backup, limpar dados.
+
+## Limitações conhecidas
+
+- **Uma sessão de treino ativa por vez** — iniciar outro bloco enquanto um está em andamento substitui a sessão anterior, sem aviso.
+- **Sem migração de schema** — só existe a versão 1 do formato; uma mudança futura de schema precisará de lógica própria de migração.
+- **Sem PWA/instalação como app** — roda como site; adicionar manifest/service worker fica para uma etapa futura.
+- **Passos são só manuais** — o campo existe e é editável, mas não há integração com sensor do celular.
+- **WOD do box é texto livre + booleano** — não há formato estruturado (AMRAP/EMOM/For Time), resultado (tempo/rounds+reps/carga por movimento) ou RX/scaled. Essa é a limitação mais relevante do produto hoje e é o foco da Fase 2 (ver `docs/ROADMAP.md`).
+- **Dados das sessões complementares não alimentam a Evolução** — reps/carga/tempo são registrados por série, mas hoje não viram gráfico de progresso nenhum.
+- **Progressões são fixas e não têm histórico de data** — só handstand e pull-up existem, não são extensíveis pelo usuário, e o avanço de etapa não registra quando aconteceu.
+
+Contexto de continuidade para desenvolvimento (arquitetura, regras e roadmap detalhado) está em [`CLAUDE.md`](./CLAUDE.md) e [`docs/ROADMAP.md`](./docs/ROADMAP.md).
