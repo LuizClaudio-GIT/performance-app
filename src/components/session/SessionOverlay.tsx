@@ -51,6 +51,7 @@ function SetRow({ exIndex, setIndex, reps, load, durationSec, note, done }: SetR
           className="pf-input"
           style={{ padding: '7px 8px', fontSize: 13, flex: 1, minWidth: 0 }}
           placeholder="reps"
+          inputMode="numeric"
           value={reps}
           onChange={(e) => updateSet(exIndex, setIndex, { reps: e.target.value })}
         />
@@ -59,6 +60,7 @@ function SetRow({ exIndex, setIndex, reps, load, durationSec, note, done }: SetR
           className="pf-input"
           style={{ padding: '7px 8px', fontSize: 13, flex: 1, minWidth: 0 }}
           placeholder="carga"
+          inputMode="decimal"
           value={load}
           onChange={(e) => updateSet(exIndex, setIndex, { load: e.target.value })}
         />
