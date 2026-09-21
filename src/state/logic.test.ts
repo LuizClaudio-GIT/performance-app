@@ -8,9 +8,15 @@ import {
   dailyKcal,
   dailyProtein,
   defaultDayPlan,
+  exerciseBestLoadSeries,
+  exerciseHistory,
+  exerciseNamesInHistory,
+  exerciseVolumeSeries,
+  findProgressionDef,
   getChecklistItems,
   getMealsForDate,
   isLastExercise,
+  isNewMetricPR,
   metricSeriesByName,
   sessionHasProgress,
   weekDayStatus,
@@ -233,5 +239,132 @@ describe('computeStreakDays', () => {
     data.boxWorkoutDone = {};
     data.sessions = [];
     expect(computeStreakDays(data)).toBe(0);
+  });
+});
+
+describe('metricSeriesByName — PR / direction (2.3)', () => {
+  it('best is the historical record, not just the latest value, for a lower-better metric', () => {
+    const data = buildSeedData(TODAY);
+    data.metrics = [
+      { id: 'm1', category: 'benchmark', name: '5 km', value: 30, unit: 'min', date: addDays(TODAY, -20), direction: 'lower-better' },
+      { id: 'm2', category: 'benchmark', name: '5 km', value: 28, unit: 'min', date: addDays(TODAY, -10), direction: 'lower-better' },
+      { id: 'm3', category: 'benchmark', name: '5 km', value: 31, unit: 'min', date: TODAY, direction: 'lower-better' },
+    ];
+    const series = metricSeriesByName(data, 'benchmark');
+    const fiveK = series.find((s) => s.name === '5 km')!;
+    expect(fiveK.latest.value).toBe(31);
+    expect(fiveK.best.value).toBe(28); // the fastest time ever, even though it's not the latest entry
+  });
+
+  it('flags each history entry as a PR only if it beat everything before it', () => {
+    const data = buildSeedData(TODAY);
+    data.metrics = [
+      { id: 'm1', category: 'benchmark', name: 'Deadlift', value: 100, unit: 'kg', date: addDays(TODAY, -20), direction: 'higher-better' },
+      { id: 'm2', category: 'benchmark', name: 'Deadlift', value: 90, unit: 'kg', date: addDays(TODAY, -10), direction: 'higher-better' },
+      { id: 'm3', category: 'benchmark', name: 'Deadlift', value: 120, unit: 'kg', date: TODAY, direction: 'higher-better' },
+    ];
+    const series = metricSeriesByName(data, 'benchmark');
+    const deadlift = series.find((s) => s.name === 'Deadlift')!;
+    expect(deadlift.history.map((h) => h.isPR)).toEqual([true, false, true]);
+  });
+});
+
+describe('isNewMetricPR', () => {
+  it('is true for the first-ever entry of a metric', () => {
+    const data = buildSeedData(TODAY);
+    data.metrics = [];
+    expect(isNewMetricPR(data, 'benchmark', 'Snatch', 50, 'higher-better')).toBe(true);
+  });
+
+  it('respects direction — a lower time is a PR only for a lower-better metric', () => {
+    const data = buildSeedData(TODAY);
+    data.metrics = [{ id: 'm1', category: 'benchmark', name: '5 km', value: 30, unit: 'min', date: TODAY, direction: 'lower-better' }];
+    expect(isNewMetricPR(data, 'benchmark', '5 km', 28, 'lower-better')).toBe(true);
+    expect(isNewMetricPR(data, 'benchmark', '5 km', 32, 'lower-better')).toBe(false);
+  });
+});
+
+describe('exercise history derivation (2.2)', () => {
+  function withCompletedSession(sets: { reps: string; load: string; durationSec: number | null }[]): ReturnType<typeof buildSeedData> {
+    const data = buildSeedData(TODAY);
+    const session: SessionLog = {
+      id: 's1',
+      blockId: 'core',
+      blockName: 'CORE',
+      date: TODAY,
+      startedAt: new Date().toISOString(),
+      endedAt: new Date().toISOString(),
+      status: 'completed',
+      currentExerciseIndex: 0,
+      restSecondsLeft: 0,
+      paused: false,
+      exercises: [{ name: 'V-up progressivo', sets: sets.map((s, i) => ({ index: i, done: true, note: '', ...s })) }],
+    };
+    data.sessions = [session];
+    return data;
+  }
+
+  it('exerciseNamesInHistory ignores in-progress sessions', () => {
+    const data = buildSeedData(TODAY);
+    data.sessions = [
+      {
+        id: 's1',
+        blockId: 'core',
+        blockName: 'CORE',
+        date: TODAY,
+        startedAt: new Date().toISOString(),
+        endedAt: null,
+        status: 'in-progress',
+        currentExerciseIndex: 0,
+        restSecondsLeft: 0,
+        paused: false,
+        exercises: [{ name: 'Hollow rock', sets: [] }],
+      },
+    ];
+    expect(exerciseNamesInHistory(data)).toEqual([]);
+  });
+
+  it('exerciseHistory only returns entries for the requested exercise, chronologically', () => {
+    const data = withCompletedSession([{ reps: '12', load: '20kg', durationSec: null }]);
+    const history = exerciseHistory(data, 'V-up progressivo');
+    expect(history).toHaveLength(1);
+    expect(history[0].sets[0].load).toBe('20kg');
+  });
+
+  it('exerciseBestLoadSeries skips sets where load is not a parseable number', () => {
+    const data = withCompletedSession([
+      { reps: '12', load: 'bodyweight', durationSec: null },
+      { reps: '10', load: '25kg', durationSec: null },
+    ]);
+    const series = exerciseBestLoadSeries(data, 'V-up progressivo');
+    expect(series).toHaveLength(1);
+    expect(series[0].value).toBe(25);
+  });
+
+  it('exerciseVolumeSeries only counts sets where BOTH reps and load are numeric', () => {
+    const data = withCompletedSession([
+      { reps: '10', load: '20kg', durationSec: null }, // counts: 200
+      { reps: '30s', load: '', durationSec: 30 }, // skipped: no numeric load
+    ]);
+    const series = exerciseVolumeSeries(data, 'V-up progressivo');
+    expect(series).toHaveLength(1);
+    expect(series[0].value).toBe(200);
+  });
+
+  it('produces no volume series at all when no set has both dimensions numeric (never fabricates a number)', () => {
+    const data = withCompletedSession([{ reps: '30s', load: '', durationSec: 30 }]);
+    expect(exerciseVolumeSeries(data, 'V-up progressivo')).toEqual([]);
+  });
+});
+
+describe('findProgressionDef', () => {
+  it('finds a seeded catalog progression by id', () => {
+    const data = buildSeedData(TODAY);
+    expect(findProgressionDef(data, 'handstand')?.name).toBe('HANDSTAND');
+  });
+
+  it('returns undefined for an unknown id', () => {
+    const data = buildSeedData(TODAY);
+    expect(findProgressionDef(data, 'does-not-exist')).toBeUndefined();
   });
 });

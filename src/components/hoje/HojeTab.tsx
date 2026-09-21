@@ -1,21 +1,28 @@
 import { useState } from 'react';
 import { getBlock } from '../../data/catalog';
 import { dayMonthLongUpper, formatDecimal, formatInt, weekdayLongUpper } from '../../lib/date';
+import { emptyWodPlan } from '../../data/schema';
 import { useAppState, useTodayPlan, useTodayWater } from '../../state/AppState';
 import { useToast } from '../common/Toast';
 import { LogStatModal } from '../common/LogStatModal';
 import { DumbbellIcon } from '../common/Icons';
 import { ChecklistCard } from './ChecklistCard';
 import { ComplementaryBlockCard } from './ComplementaryBlockCard';
+import { WodResultModal } from './WodResultModal';
+import { RecoveryModal } from './RecoveryModal';
+import { formatWodResultShort } from '../../state/workouts';
 
 type StatModalKind = 'peso' | 'passos' | 'agua' | null;
 
 export function HojeTab() {
-  const { data, today, toggleBoxWorkoutDone, logWeight, setSteps, addWater } = useAppState();
+  const { data, today, updateDayPlan, logWeight, setSteps, addWater, logWorkoutAttempt, deleteWorkoutAttempt, complementarySuggestion, recoverySuggestionNote } =
+    useAppState();
   const { showToast } = useToast();
   const plan = useTodayPlan();
   const water = useTodayWater();
   const [openModal, setOpenModal] = useState<StatModalKind>(null);
+  const [wodModalOpen, setWodModalOpen] = useState(false);
+  const [recoveryOpen, setRecoveryOpen] = useState(false);
 
   const latestWeight = [...data.weightLog].filter((w) => w.date <= today).sort((a, b) => b.date.localeCompare(a.date))[0];
   const steps = data.steps[today] ?? 0;
@@ -32,7 +39,21 @@ export function HojeTab() {
       ? blocks.map((b) => b.obj).join(' ')
       : plan.note || 'Aproveite para recuperar — mobilidade leve e sono são treino também.';
 
+  const todayAttempt = data.workoutAttempts.find((a) => a.date === today && a.kind === 'daily');
   const boxDone = !!data.boxWorkoutDone[today];
+  const suggestion = complementarySuggestion.suggestion;
+
+  function handleWodSave(input: Parameters<typeof logWorkoutAttempt>[0]) {
+    if (todayAttempt) deleteWorkoutAttempt(todayAttempt.id);
+    const { isPR } = logWorkoutAttempt(input);
+    showToast(isPR ? 'Resultado registrado — novo PR! 🏆' : 'Resultado registrado!');
+  }
+
+  function addSuggestedBlock() {
+    if (!suggestion) return;
+    updateDayPlan(today, { complementaryBlockIds: [...plan.complementaryBlockIds, suggestion.blockId] });
+    showToast(`${suggestion.blockName} adicionado ao plano de hoje.`);
+  }
 
   return (
     <div className="pf-page">
@@ -97,12 +118,9 @@ export function HojeTab() {
                   color: boxDone ? 'var(--pf-accent)' : 'var(--pf-text-secondary)',
                   background: boxDone ? 'var(--pf-accent-soft)' : 'transparent',
                 }}
-                onClick={() => {
-                  toggleBoxWorkoutDone();
-                  showToast(boxDone ? 'Treino do box desmarcado.' : 'Treino do box registrado!');
-                }}
+                onClick={() => setWodModalOpen(true)}
               >
-                {boxDone ? '✓ CONCLUÍDO' : 'MARCAR CONCLUÍDO'}
+                {boxDone ? '✓ REGISTRADO' : 'REGISTRAR RESULTADO'}
               </button>
             </div>
             {plan.boxWorkoutBody && (
@@ -112,10 +130,34 @@ export function HojeTab() {
                   <div className="pf-wod-text" style={{ whiteSpace: 'pre-line' }}>
                     {plan.boxWorkoutBody}
                   </div>
+                  {todayAttempt && (
+                    <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--pf-border-soft)' }}>
+                      <div className="pf-wod-label">RESULTADO DE HOJE</div>
+                      <div style={{ fontFamily: 'var(--pf-font-display)', fontWeight: 700, fontSize: 20 }}>
+                        {formatWodResultShort(todayAttempt.result)}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
           </div>
+
+          {suggestion ? (
+            <div className="pf-suggestion-card">
+              <div className="pf-suggestion-label">SUGESTÃO — BASEADA NO SEU WOD E LIMITAÇÕES</div>
+              <div className="pf-suggestion-text">{suggestion.reason}</div>
+              <button className="pf-btn-primary" style={{ marginTop: 11, padding: '9px 14px', fontSize: 13 }} onClick={addSuggestedBlock}>
+                ADICIONAR AO PLANO DE HOJE
+              </button>
+            </div>
+          ) : complementarySuggestion.note ? (
+            <div style={{ fontFamily: 'var(--pf-font-mono)', fontSize: 9.5, color: 'var(--pf-text-faint)', marginTop: 10, lineHeight: 1.5 }}>
+              {complementarySuggestion.note}
+            </div>
+          ) : null}
+
+          {recoverySuggestionNote && <div className="pf-recovery-note">{recoverySuggestionNote}</div>}
         </>
       )}
 
@@ -160,6 +202,18 @@ export function HojeTab() {
           <div className="pf-stat-sub">meta {formatDecimal(data.goals.waterGoalL)} L</div>
         </button>
       </div>
+
+      <button
+        className="pf-shortcut-row"
+        style={{ marginTop: 10, border: '1px solid var(--pf-border)', borderRadius: 12 }}
+        onClick={() => setRecoveryOpen(true)}
+      >
+        <div className="pf-shortcut-label">Recuperação de hoje</div>
+        <div className="pf-shortcut-hint">
+          {data.recoveryLogs[today] ? `RPE ${data.recoveryLogs[today].rpe ?? '—'}` : 'toque para registrar'}
+        </div>
+        <div className="pf-shortcut-chevron">›</div>
+      </button>
 
       <div className="pf-banner">
         <div className="pf-banner-stripes" />
@@ -210,6 +264,18 @@ export function HojeTab() {
           onClose={() => setOpenModal(null)}
         />
       )}
+      {wodModalOpen && (
+        <WodResultModal
+          title="Registrar resultado do WOD"
+          kind="daily"
+          workoutDefId={null}
+          initialLabel={todayAttempt?.label ?? ''}
+          initialPlan={plan.wodPlan ?? emptyWodPlan()}
+          onSave={handleWodSave}
+          onClose={() => setWodModalOpen(false)}
+        />
+      )}
+      {recoveryOpen && <RecoveryModal onClose={() => setRecoveryOpen(false)} />}
     </div>
   );
 }

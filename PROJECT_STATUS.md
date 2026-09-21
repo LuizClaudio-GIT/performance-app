@@ -1,6 +1,8 @@
 # PERFORMANCE — Status do Projeto e Plano do MVP
 
-_Última atualização: 2026-09-21 — branch `feat/performance-mvp-funcional`_
+_Última atualização: 2026-09-27 — branch `feat/performance-esportiva-wod`_
+
+> **Este documento é o registro histórico do planejamento e execução do MVP (Fase 1), já concluído e mergeado em `main`.** Para o status atual do projeto — incluindo a Fase 2 (Performance Esportiva: WOD estruturado, PRs reais, benchmarks, progressões extensíveis, Hoje inteligente), o que está concluído/parcial/pendente, e a visão futura — ver [`docs/ROADMAP.md`](./docs/ROADMAP.md). Arquitetura e decisões atualizadas estão em [`CLAUDE.md`](./CLAUDE.md). O conteúdo abaixo permanece como estava ao fim do MVP, sem edição retroativa.
 
 ## O que existe hoje (antes deste MVP)
 

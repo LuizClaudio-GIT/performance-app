@@ -162,16 +162,27 @@ export function SessionOverlay() {
             {block.area} → {block.limit} → {exCatalog.name.toUpperCase()}
           </div>
 
-          <div className="pf-session-media">
-            <div className="pf-session-media-stripes" />
-            <div className="pf-session-media-center">
-              <div className="pf-session-play">
-                <PlayGlyph size={18} />
+          {exCatalog.videoUrl ? (
+            <video
+              className="pf-session-media"
+              src={exCatalog.videoUrl}
+              poster={exCatalog.thumbnail ?? undefined}
+              controls
+              playsInline
+              style={{ width: '100%', objectFit: 'cover' }}
+            />
+          ) : (
+            <div className="pf-session-media">
+              <div className="pf-session-media-stripes" />
+              <div className="pf-session-media-center">
+                <div className="pf-session-play">
+                  <PlayGlyph size={18} />
+                </div>
+                <div className="pf-session-media-label">VÍDEO DE DEMONSTRAÇÃO</div>
               </div>
-              <div className="pf-session-media-label">VÍDEO DE DEMONSTRAÇÃO</div>
+              <div className="pf-session-media-tag">EM BREVE</div>
             </div>
-            <div className="pf-session-media-tag">EXECUÇÃO LENTA · 12s</div>
-          </div>
+          )}
 
           <div className="pf-session-ex-name">{exCatalog.name}</div>
           <div className="pf-session-ex-objective">{exCatalog.obj}</div>

@@ -1,0 +1,180 @@
+/* WOD result, PR, benchmark, progression and recommendation UI (Fase 2). */
+
+.pf-last-attempt {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border: 1px solid var(--pf-border-soft);
+  background: var(--pf-surface-muted);
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-family: var(--pf-font-mono);
+}
+
+.pf-last-attempt-label {
+  font-size: 8.5px;
+  letter-spacing: 0.12em;
+  color: var(--pf-text-secondary);
+}
+
+.pf-last-attempt-value {
+  font-size: 12px;
+  color: var(--pf-text);
+}
+
+.pf-rpe-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+
+.pf-rpe-btn {
+  padding: 10px 0;
+  border-radius: 8px;
+  border: 1px solid var(--pf-border);
+  background: transparent;
+  color: var(--pf-text-secondary);
+  font-family: var(--pf-font-mono);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.pf-rpe-btn[data-active='true'] {
+  background: var(--pf-accent);
+  border-color: var(--pf-accent);
+  color: var(--pf-on-accent);
+  font-weight: 700;
+}
+
+.pf-pr-badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--pf-font-mono);
+  font-size: 8.5px;
+  letter-spacing: 0.12em;
+  color: var(--pf-on-accent);
+  background: var(--pf-accent);
+  padding: 3px 7px;
+  border-radius: 5px;
+  white-space: nowrap;
+}
+
+.pf-suggestion-card {
+  margin-top: 14px;
+  border: 1px solid var(--pf-accent-border);
+  border-radius: 14px;
+  background: linear-gradient(160deg, rgba(198, 255, 0, 0.08), rgba(198, 255, 0, 0) 65%), var(--pf-surface);
+  padding: 14px 15px;
+}
+
+.pf-suggestion-label {
+  font-family: var(--pf-font-mono);
+  font-size: 8.5px;
+  letter-spacing: 0.18em;
+  color: var(--pf-accent);
+  margin-bottom: 6px;
+}
+
+.pf-suggestion-text {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--pf-text);
+}
+
+.pf-recovery-note {
+  margin-top: 10px;
+  border: 1px solid var(--pf-warn-border);
+  border-radius: 12px;
+  background: var(--pf-warn-bg);
+  padding: 11px 13px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--pf-warn-text-soft);
+}
+
+.pf-movement-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pf-movement-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: 6px;
+  align-items: center;
+}
+
+.pf-workout-def-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pf-workout-def-card {
+  border: 1px solid var(--pf-border);
+  border-radius: 14px;
+  background: var(--pf-surface);
+  padding: 14px 15px;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+
+.pf-workout-def-name {
+  font-family: var(--pf-font-display);
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.pf-workout-def-meta {
+  font-family: var(--pf-font-mono);
+  font-size: 9.5px;
+  color: var(--pf-text-secondary);
+  margin-top: 6px;
+}
+
+.pf-attempt-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px solid var(--pf-border-soft);
+  font-size: 12.5px;
+}
+
+.pf-attempt-row:first-child {
+  border-top: none;
+}
+
+.pf-exercise-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pf-exercise-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid var(--pf-border);
+  border-radius: 11px;
+  background: var(--pf-surface);
+  padding: 12px 14px;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+
+.pf-exercise-name {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.pf-exercise-hint {
+  font-family: var(--pf-font-mono);
+  font-size: 9px;
+  color: var(--pf-text-secondary);
+  margin-top: 3px;
+}

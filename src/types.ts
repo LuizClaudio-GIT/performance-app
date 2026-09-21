@@ -1,5 +1,5 @@
 export type TabId = 'hoje' | 'semana' | 'food' | 'evo' | 'mais';
-export type EvoTabId = 'resumo' | 'medidas' | 'progressoes';
+export type EvoTabId = 'resumo' | 'treinos' | 'benchmarks' | 'medidas' | 'progressoes';
 export type BlockId = 'mob' | 'gin' | 'core';
 
 export interface Exercise {
@@ -10,6 +10,9 @@ export interface Exercise {
   rest: string;
   cues: string[];
   errs: string[];
+  /** Real demonstration asset, when one exists. Never fabricated — stays null/undefined until a real asset is wired in. */
+  videoUrl?: string | null;
+  thumbnail?: string | null;
 }
 
 export type BlockPriority = 'PRIORIDADE ALTA' | 'PROGRESSÃO' | 'OPCIONAL';
