@@ -1,10 +1,10 @@
 # ROADMAP — Performance
 
-_Última atualização: 2026-09-27 — branch `feat/performance-esportiva-wod`_
+_Última atualização: 2026-09-21 — branch `feat/performance-esportiva-wod`, auditoria final da Fase 2 concluída, aguardando merge em `main`_
 
 ## Onde estamos
 
-O MVP (Fase 1) está fechado e mergeado em `main`. A Fase 2 — Performance Esportiva, abaixo, foi implementada nesta branch de forma autônoma, cobrindo todos os itens 2.1–2.6 e a cadeia de recomendação, na medida em que dá para fazer de forma determinística e sem inventar dado/critério. Detalhes de arquitetura, decisões e estrutura de dados estão em `CLAUDE.md`.
+O MVP (Fase 1) está fechado e mergeado em `main`. A Fase 2 — Performance Esportiva, abaixo, foi implementada nesta branch e passou por auditoria final completa (técnica, de código, de persistência e mobile) antes da abertura do PR para `main` — cobrindo todos os itens 2.1–2.6 e a cadeia de recomendação, na medida em que dá para fazer de forma determinística e sem inventar dado/critério. Detalhes de arquitetura, decisões e estrutura de dados estão em `CLAUDE.md`.
 
 **Legenda:** ✅ CONCLUÍDO (implementado, testado, verificado rodando no navegador) · 🟡 PARCIAL (implementado, com limitação conhecida) · ⏳ PENDENTE (não implementado ainda) · 🔭 VISÃO FUTURA (fora do escopo desta fase, registrado para depois).
 
@@ -30,6 +30,7 @@ O MVP (Fase 1) está fechado e mergeado em `main`. A Fase 2 — Performance Espo
 - `MetricEntry.direction` (`higher-better`/`lower-better`), configurável por métrica no formulário (`AddMetricModal`), com heurística de default na migração de dado antigo (documentada, editável).
 - `metricSeriesByName` agora calcula `best` (recorde histórico real, respeitando direção) além de `latest` — recorde não é mais "último valor lançado". Cada entrada do histórico é marcada `isPR` no momento em que foi lançada.
 - Mesmo conceito aplicado a WODs inteiros: `state/workouts.ts` (`compareWodResult`, `isNewWorkoutPR`) compara resultados respeitando o formato (tempo: menor vence; AMRAP/EMOM: mais rounds+reps vence) e determina PR contra o melhor histórico, não contra a última tentativa.
+- **RX e Scaled nunca são comparados como a mesma categoria** (fix `f3a7240`, auditoria final): `isNewWorkoutPR` só compara uma tentativa contra tentativas anteriores da mesma `scale`, e `bestDisplayAttempt` (usada em toda a UI de "melhor resultado"/"recorde") prioriza o melhor RX, só caindo para Scaled/Other quando não há RX registrado. Histórico completo permanece intacto e visível independente da categoria. Coberto por teste em `state/workouts.test.ts`.
 - Feedback imediato: toast "novo PR" ao salvar resultado de WOD ou métrica quando aplicável; badge "PR"/"MELHOR" na UI (Resumo, Benchmarks).
 
 ### 2.4 — Benchmarks CrossFit — ✅ CONCLUÍDO
