@@ -6,6 +6,7 @@ import type { AppData, WorkoutAttempt } from '../data/schema';
 import {
   attemptsForLabel,
   attemptsForWorkoutDef,
+  bestDisplayAttempt,
   bestWorkoutAttempt,
   compareWodResult,
   formatWodResultShort,
@@ -14,6 +15,12 @@ import {
 } from './workouts';
 
 const TODAY = todayISO();
+
+function baseData(): AppData {
+  const data = buildSeedData(TODAY);
+  data.workoutAttempts = [];
+  return data;
+}
 
 function attempt(overrides: Partial<WorkoutAttempt>): WorkoutAttempt {
   return {
@@ -81,12 +88,6 @@ describe('bestWorkoutAttempt', () => {
 });
 
 describe('isNewWorkoutPR / priorAttempts / attemptsForWorkoutDef / attemptsForLabel', () => {
-  function baseData(): AppData {
-    const data = buildSeedData(TODAY);
-    data.workoutAttempts = [];
-    return data;
-  }
-
   it('the first-ever attempt at a workout is always a PR', () => {
     const data = baseData();
     const first = attempt({ id: 'first', workoutDefId: 'bm_fran', result: { ...emptyWodResult('rounds-reps'), timeSec: 500 } });
@@ -129,6 +130,57 @@ describe('isNewWorkoutPR / priorAttempts / attemptsForWorkoutDef / attemptsForLa
     data.workoutAttempts = [a, b];
     const prior = priorAttempts(data, b);
     expect(prior.map((p) => p.id)).toEqual(['a']);
+  });
+});
+
+describe('isNewWorkoutPR keeps RX and Scaled as separate categories', () => {
+  it('a faster Scaled attempt is not compared against an RX best — it is a PR only within its own category', () => {
+    const data = baseData();
+    const rxBest = attempt({
+      id: 'rx',
+      date: '2026-01-01',
+      workoutDefId: 'bm_fran',
+      result: { ...emptyWodResult('rounds-reps'), timeSec: 400, scale: 'rx' },
+    });
+    data.workoutAttempts = [rxBest];
+
+    const firstScaled = attempt({
+      id: 'scaled-1',
+      date: '2026-01-10',
+      workoutDefId: 'bm_fran',
+      result: { ...emptyWodResult('rounds-reps'), timeSec: 300, scale: 'scaled' },
+    });
+    // Objectively faster in seconds than the RX best, but it's a different
+    // category — must still count as a PR (it's the first-ever Scaled attempt).
+    expect(isNewWorkoutPR(data, firstScaled)).toBe(true);
+
+    data.workoutAttempts = [rxBest, firstScaled];
+    const worseScaled = attempt({
+      id: 'scaled-2',
+      date: '2026-01-15',
+      workoutDefId: 'bm_fran',
+      result: { ...emptyWodResult('rounds-reps'), timeSec: 350, scale: 'scaled' },
+    });
+    // Slower than the Scaled best, and must not be measured against the RX
+    // best (which it would beat) — not a PR.
+    expect(isNewWorkoutPR(data, worseScaled)).toBe(false);
+  });
+});
+
+describe('bestDisplayAttempt', () => {
+  it('prefers the RX best even when a Scaled attempt is objectively faster', () => {
+    const rx = attempt({ id: 'rx', result: { ...emptyWodResult('rounds-reps'), timeSec: 500, scale: 'rx' } });
+    const fasterScaled = attempt({ id: 'scaled', result: { ...emptyWodResult('rounds-reps'), timeSec: 300, scale: 'scaled' } });
+    expect(bestDisplayAttempt([rx, fasterScaled])?.id).toBe('rx');
+  });
+
+  it('falls back to the best Scaled/Other attempt when there is no RX history', () => {
+    const scaled = attempt({ id: 'scaled', result: { ...emptyWodResult('rounds-reps'), timeSec: 500, scale: 'scaled' } });
+    expect(bestDisplayAttempt([scaled])?.id).toBe('scaled');
+  });
+
+  it('returns null for an empty list', () => {
+    expect(bestDisplayAttempt([])).toBeNull();
   });
 });
 

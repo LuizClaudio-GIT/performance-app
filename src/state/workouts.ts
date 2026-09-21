@@ -39,6 +39,18 @@ export function bestWorkoutAttempt(attempts: WorkoutAttempt[]): WorkoutAttempt |
   return attempts.reduce((best, cur) => (compareWodResult(cur.result.format, cur.result, best.result) > 0 ? cur : best));
 }
 
+/**
+ * The "headline" record for a workout: RX and Scaled are different difficulty
+ * levels, not points on the same performance axis, so a fast Scaled time must
+ * never outrank a slower RX one. Prefers the best RX attempt when any exists;
+ * falls back to the best Scaled/Other attempt only when there's no RX history.
+ */
+export function bestDisplayAttempt(attempts: WorkoutAttempt[]): WorkoutAttempt | null {
+  const rx = attempts.filter((a) => a.result.scale === 'rx');
+  if (rx.length > 0) return bestWorkoutAttempt(rx);
+  return bestWorkoutAttempt(attempts);
+}
+
 export function attemptsForWorkoutDef(data: AppData, workoutDefId: string): WorkoutAttempt[] {
   return data.workoutAttempts.filter((a) => a.workoutDefId === workoutDefId).sort((a, b) => b.date.localeCompare(a.date));
 }
@@ -65,7 +77,9 @@ export function lastAttemptBefore(data: AppData, attempt: Pick<WorkoutAttempt, '
 }
 
 export function isNewWorkoutPR(data: AppData, attempt: WorkoutAttempt): boolean {
-  const prior = priorAttempts(data, attempt);
+  // RX and Scaled are separate categories — a Scaled attempt can only be a PR
+  // against prior Scaled attempts, never against an RX best (and vice versa).
+  const prior = priorAttempts(data, attempt).filter((a) => a.result.scale === attempt.result.scale);
   const best = bestWorkoutAttempt(prior);
   if (!best) return true;
   return compareWodResult(attempt.result.format, attempt.result, best.result) > 0;

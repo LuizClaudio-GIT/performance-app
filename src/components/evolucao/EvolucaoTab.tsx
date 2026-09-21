@@ -3,7 +3,7 @@ import { formatDecimal } from '../../lib/date';
 import type { EvoTabId } from '../../types';
 import { useAppState } from '../../state/AppState';
 import { exerciseNamesInHistory, findProgressionDef, metricSeriesByName, weightSeries } from '../../state/logic';
-import { bestWorkoutAttempt, formatWodResultShort } from '../../state/workouts';
+import { bestDisplayAttempt, formatWodResultShort } from '../../state/workouts';
 import { StepTimeline } from '../common/StepTimeline';
 import { ConfirmDialog } from '../common/ConfirmDialog';
 import { useToast } from '../common/Toast';
@@ -167,7 +167,7 @@ export function EvolucaoTab() {
           <div className="pf-workout-def-list">
             {data.workoutDefs.map((def) => {
               const attempts = data.workoutAttempts.filter((a) => a.workoutDefId === def.id);
-              const best = bestWorkoutAttempt(attempts);
+              const best = bestDisplayAttempt(attempts);
               return (
                 <button key={def.id} className="pf-workout-def-card" onClick={() => setBenchmarkOpen(def.id)}>
                   <div className="pf-workout-def-name">{def.name}</div>

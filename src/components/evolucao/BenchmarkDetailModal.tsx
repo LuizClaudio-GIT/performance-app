@@ -4,7 +4,7 @@ import { ConfirmDialog } from '../common/ConfirmDialog';
 import { useAppState } from '../../state/AppState';
 import { useToast } from '../common/Toast';
 import { dayMonthShort } from '../../lib/date';
-import { attemptsForWorkoutDef, bestWorkoutAttempt, formatWodResultShort } from '../../state/workouts';
+import { attemptsForWorkoutDef, bestDisplayAttempt, formatWodResultShort } from '../../state/workouts';
 import { WodResultModal } from '../hoje/WodResultModal';
 import { WorkoutDefModal } from './WorkoutDefModal';
 
@@ -20,7 +20,7 @@ export function BenchmarkDetailModal({ workoutDefId, onClose }: { workoutDefId: 
   if (!def) return null;
 
   const attempts = attemptsForWorkoutDef(data, workoutDefId);
-  const best = bestWorkoutAttempt(attempts);
+  const best = bestDisplayAttempt(attempts);
 
   return (
     <>
