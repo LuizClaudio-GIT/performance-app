@@ -10,6 +10,7 @@ import { SessionCompleteModal } from './components/session/SessionCompleteModal'
 import { SessionOverlay } from './components/session/SessionOverlay';
 import { AppStateProvider, useAppState } from './state/AppState';
 import { ToastProvider } from './components/common/Toast';
+import { LockGate } from './components/common/LockGate';
 
 function TabContent() {
   const { tab } = useAppState();
@@ -53,10 +54,12 @@ function AppShell() {
 
 export default function App() {
   return (
-    <AppStateProvider>
-      <ToastProvider>
-        <AppShell />
-      </ToastProvider>
-    </AppStateProvider>
+    <LockGate>
+      <AppStateProvider>
+        <ToastProvider>
+          <AppShell />
+        </ToastProvider>
+      </AppStateProvider>
+    </LockGate>
   );
 }

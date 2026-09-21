@@ -14,6 +14,7 @@ import './styles/session.css';
 import './styles/forms.css';
 import './styles/modal.css';
 import './styles/wod.css';
+import './styles/lock.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

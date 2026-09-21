@@ -78,6 +78,21 @@ Fluxo de dados: `AppState.tsx` carrega o `AppData` do storage uma vez, expõe a�
 
 Detalhamento completo da Fase 2 (WOD estruturado, PRs, benchmarks, progressões, Hoje inteligente, cadeia de recomendação) em [`docs/ROADMAP.md`](./docs/ROADMAP.md), com status real (concluído/parcial/pendente) por item.
 
+## Proteção de acesso (PIN)
+
+O app está publicado publicamente (GitHub Pages, repo público). Para desencorajar acesso casual de quem encontrar o link, existe uma tela de PIN opcional (`src/components/common/LockGate.tsx` + `src/lib/lock.ts`):
+
+- Sem `VITE_APP_PIN_HASH` configurado, o app abre normalmente (sem gate) — é o estado atual até você configurar.
+- Para ativar: escolha um PIN e gere o hash SHA-256 dele localmente (o PIN em si nunca fica no repositório, só o hash):
+  ```bash
+  node -e "console.log(require('crypto').createHash('sha256').update('SEU_PIN_AQUI').digest('hex'))"
+  ```
+- Adicione o resultado como secret do repositório no GitHub: **Settings → Secrets and variables → Actions → New repository secret**, nome `APP_PIN_HASH`, valor o hash gerado.
+- No próximo push em `main` (ou rodando o workflow manualmente em Actions → Deploy to GitHub Pages → Run workflow), o build já sai com o PIN ativo.
+- Em **Mais → Bloquear app** dá pra forçar a tela de PIN de novo (útil antes de emprestar o celular, por exemplo).
+
+**Isso não é segurança real** — é um site estático com código-fonte público; alguém com conhecimento técnico pode inspecionar o bundle JS e contornar o hash (força bruta offline, por exemplo). Serve só para afastar um visitante casual que ache o link, não para proteger dado sensível — que, de todo modo, nunca sai do `localStorage` do dispositivo de quem está logado (ver seção de persistência acima).
+
 ## Limitações conhecidas
 
 - **Uma sessão de treino ativa por vez** — iniciar outro bloco enquanto um está em andamento substitui a sessão anterior, sem aviso.

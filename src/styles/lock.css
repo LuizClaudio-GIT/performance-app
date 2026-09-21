@@ -1,0 +1,50 @@
+.pf-lock-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--pf-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 100;
+}
+
+.pf-lock-card {
+  width: 100%;
+  max-width: 320px;
+  border: 1px solid var(--pf-border);
+  border-radius: 16px;
+  background: var(--pf-surface);
+  padding: 26px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pf-lock-title {
+  font-family: var(--pf-font-display);
+  font-weight: 700;
+  font-size: 26px;
+  letter-spacing: 0.02em;
+  color: var(--pf-text);
+}
+
+.pf-lock-label {
+  font-family: var(--pf-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--pf-text-secondary);
+  margin-top: -6px;
+}
+
+.pf-lock-input {
+  text-align: center;
+  font-size: 20px;
+  letter-spacing: 0.4em;
+}
+
+.pf-lock-error {
+  font-size: 12px;
+  color: #ff8b7c;
+  margin-top: -4px;
+}

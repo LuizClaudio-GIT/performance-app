@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { useAppState } from '../../state/AppState';
 import { computeStreakDays } from '../../state/logic';
+import { isLockConfigured, lockApp } from '../../lib/lock';
 import { ConfirmDialog } from '../common/ConfirmDialog';
 import { useToast } from '../common/Toast';
 import { ClearDataModal } from './ClearDataModal';
@@ -174,6 +175,22 @@ export function MaisTab() {
           <div className="pf-shortcut-chevron">›</div>
         </button>
       </div>
+
+      {isLockConfigured() && (
+        <div className="pf-shortcuts-list" style={{ marginTop: 10 }}>
+          <button
+            className="pf-shortcut-row"
+            onClick={() => {
+              lockApp();
+              window.location.reload();
+            }}
+          >
+            <div className="pf-shortcut-label">Bloquear app</div>
+            <div className="pf-shortcut-hint">pedir PIN de novo</div>
+            <div className="pf-shortcut-chevron">🔒</div>
+          </button>
+        </div>
+      )}
       <input
         ref={fileInputRef}
         type="file"
